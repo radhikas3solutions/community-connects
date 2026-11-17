@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+/* Brand tokens: deep teal (trust) + turmeric (warmth, festival). */
+@theme {
+  --font-sans: var(--font-inter), var(--font-telugu), ui-sans-serif, system-ui, sans-serif;
+  --font-telugu-stack: var(--font-telugu), var(--font-inter), sans-serif;
+
+  --color-brand-50: #eefaf8;
+  --color-brand-100: #d5f2ed;
+  --color-brand-200: #aee4da;
+  --color-brand-500: #14857a;
+  --color-brand-600: #0f6b63;
+  --color-brand-700: #0d5650;
+  --color-brand-900: #0a3532;
+
+  --color-accent-100: #fdf0d9;
+  --color-accent-400: #f2a93b;
+  --color-accent-500: #e08a12;
+  --color-accent-600: #b86d0b;
+
+  --color-ink: #1c2321;
+  --color-muted: #5b6662;
+  --color-line: #e3e8e6;
+  --color-surface: #ffffff;
+  --color-canvas: #f7f8f6;
+
+  --radius-card: 1rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-canvas text-ink antialiased;
+  }
+  /* Telugu script needs extra line height for vowel signs (matras). */
+  :lang(te) {
+    font-family: var(--font-telugu-stack);
+    line-height: 1.7;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+}
