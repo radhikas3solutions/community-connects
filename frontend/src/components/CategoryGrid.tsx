@@ -20,13 +20,8 @@ export function CategoryGrid({
             <span aria-hidden className="text-2xl">
               {c.icon}
             </span>
-            <span className="min-w-0">
-              <span className="block truncate font-semibold" lang={lang}>
-                {lang === "te" ? c.name_te : c.name_en}
-              </span>
-              <span className="block truncate text-xs text-muted" lang={lang === "te" ? "en" : "te"}>
-                {lang === "te" ? c.name_en : c.name_te}
-              </span>
+            <span className="min-w-0 truncate font-semibold" lang={lang}>
+              {lang === "te" ? c.name_te : c.name_en}
             </span>
           </>
         );

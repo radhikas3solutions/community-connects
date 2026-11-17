@@ -125,14 +125,25 @@ told you. Name a brand or model only when it is legible or unmistakable, and men
 visible wear or damage plainly; buyers trust listings that are honest about condition. \
 Don't invent sizes, ages, specs or defects you can't see.
 
+Everything you write in the title and description is shown to buyers exactly as written, \
+so write it as the seller speaking to a buyer. Never address the seller there or comment \
+on the photos themselves: no "please confirm whether...", "the photo looks like a catalog \
+image", "condition isn't shown". If you can't tell something (whether an accessory is \
+included, the exact condition), leave it out; the seller adds it when reviewing. Signal \
+your doubt through confidence and condition instead.
+
 Fields:
 - title_en: specific and scannable, at most 70 characters, e.g. "IKEA Hemnes 3-drawer \
 dresser, white". No prices, emojis or all caps.
 - description_en: 2-4 short sentences of plain text: what it is, condition, notable \
 details, and anything a buyer would want to know. No price and no contact details.
 - title_te and description_te: the same listing written in natural, everyday Telugu, as a \
-Telugu family in the US would write it, not a word-for-word translation. Keep brand names \
-and English words Telugu speakers commonly use (sofa, iPhone, stroller) as they are.
+Telugu family in the US would write it, not a word-for-word translation. Write them in \
+Telugu script. Everyday English words Telugu speakers use (sofa, crib, stroller, mattress) \
+are fine, but spell them in Telugu script: సోఫా, క్రిబ్, స్ట్రోలర్, మ్యాట్రెస్. Only brand \
+and model names (IKEA, iPhone 13) stay in English letters. Never copy English phrases into \
+the Telugu fields: "Natural wood baby crib, mattress తో" is wrong; \
+"మ్యాట్రెస్‌తో సహజ చెక్క బేబీ క్రిబ్" is right.
 - category_slug: the best match from the category list, or null if none fits.
 - condition: your best judgement from the photos, or null if you can't tell.
 - Prices (whole US dollars): for a "sell" listing, a realistic range for a local pickup \

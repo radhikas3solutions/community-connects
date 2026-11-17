@@ -41,10 +41,6 @@ export default async function ListingPage({ params }: { params: Params }) {
   const isOwner = session?.userId === listing.owner.id;
   const title = localized(listing.title_en, listing.title_te, lang);
   const description = localized(listing.description_en, listing.description_te, lang);
-  // Show the other language too when both exist: many households read both.
-  const otherLang = lang === "te" ? "en" : "te";
-  const otherTitle = otherLang === "te" ? listing.title_te : listing.title_en;
-  const otherDescription = otherLang === "te" ? listing.description_te : listing.description_en;
   const [cover, ...rest] = listing.images;
   const typeLabel =
     listing.listing_type === "free" ? t.listing.free : listing.listing_type === "buy" ? t.listing.wanted : t.listing.sell;
@@ -152,18 +148,6 @@ export default async function ListingPage({ params }: { params: Params }) {
             <p className="whitespace-pre-line" lang={listing.description_te && lang === "te" ? "te" : "en"}>
               {description}
             </p>
-          )}
-
-          {otherTitle && otherTitle !== title && (
-            <details className="rounded-xl border border-line bg-surface p-3">
-              <summary className="cursor-pointer text-sm font-semibold">
-                {otherLang === "te" ? t.detail.otherLanguageTe : t.detail.otherLanguage}
-              </summary>
-              <div className="mt-2 space-y-2" lang={otherLang}>
-                <p className="font-semibold">{otherTitle}</p>
-                {otherDescription && <p className="whitespace-pre-line text-sm">{otherDescription}</p>}
-              </div>
-            </details>
           )}
 
           {isOwner ? (
