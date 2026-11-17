@@ -4,9 +4,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { getDictionary } from "@/i18n/server";
+import { ShareListing } from "@/components/ShareListing";
+import { getDictionary, getLang } from "@/i18n/server";
 import { getListing } from "@/lib/api";
 import { formatPrice, localized } from "@/lib/format";
+import { listingCoverUrl, listingShareText, listingShareUrl } from "@/lib/share";
 import { getSession } from "@/lib/supabase/server";
 import type { Listing } from "@/lib/types";
 
@@ -14,8 +16,29 @@ type Params = Promise<{ id: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { id } = await params;
-  const listing = await getListing(id).catch(() => null);
-  return { title: listing ? (listing.title_en ?? listing.title_te ?? "Listing") : "Listing" };
+  const [listing, lang] = await Promise.all([getListing(id).catch(() => null), getLang()]);
+  if (!listing) return { title: "Listing" };
+
+  // Link preview (WhatsApp, Facebook, iMessage): photo, title, price and town.
+  const title = localized(listing.title_en, listing.title_te, lang) || "Listing";
+  const details = [formatPrice(listing, lang), listing.city].filter(Boolean).join(" · ");
+  const body = localized(listing.description_en, listing.description_te, lang);
+  const description = [details, body].filter(Boolean).join(" · ").slice(0, 200);
+  const cover = listing.images[0];
+  return {
+    title,
+    description,
+    alternates: { canonical: `/listings/${listing.id}` },
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: listingShareUrl(listing.id, lang),
+      locale: lang === "te" ? "te_IN" : "en_US",
+      images: cover ? [{ url: listingCoverUrl(listing.id), alt: title }] : undefined,
+    },
+    twitter: { card: cover ? "summary_large_image" : "summary" },
+  };
 }
 
 export default async function ListingPage({ params }: { params: Params }) {
@@ -148,6 +171,19 @@ export default async function ListingPage({ params }: { params: Params }) {
             <p className="whitespace-pre-line" lang={listing.description_te && lang === "te" ? "te" : "en"}>
               {description}
             </p>
+          )}
+
+          {listing.status === "active" && (
+            <ShareListing
+              text={listingShareText(listing, lang)}
+              url={listingShareUrl(listing.id, lang)}
+              labels={{
+                title: t.detail.share,
+                whatsapp: t.detail.shareWhatsapp,
+                copy: t.detail.copyLink,
+                copied: t.detail.copied,
+              }}
+            />
           )}
 
           {isOwner ? (

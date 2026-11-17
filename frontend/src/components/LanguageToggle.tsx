@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { LANG_COOKIE } from "@/i18n/constants";
 import type { Language } from "@/lib/types";
 
-const LANG_COOKIE = "cc_lang"; // keep in sync with i18n/server.ts
 
 function persistLanguage(lang: Language) {
   document.cookie = `${LANG_COOKIE}=${lang}; path=/; max-age=31536000; samesite=lax`;
@@ -17,6 +17,13 @@ export function LanguageToggle({ lang }: { lang: Language }) {
   function choose(next: Language) {
     if (next === lang) return;
     persistLanguage(next);
+    // A shared link's `?lang=` would override the new choice, so drop it from the URL.
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("lang")) {
+      url.searchParams.delete("lang");
+      startTransition(() => router.replace(url.pathname + url.search + url.hash));
+      return;
+    }
     // Re-render server components with the new dictionary.
     startTransition(() => router.refresh());
   }

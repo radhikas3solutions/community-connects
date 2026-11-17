@@ -1,13 +1,15 @@
 import "server-only";
 
 import { cookies, headers } from "next/headers";
+import { LANG_COOKIE, LANG_OVERRIDE_HEADER } from "@/i18n/constants";
 import { dictionaries } from "@/i18n/dictionaries";
 import type { Language } from "@/lib/types";
 
-export const LANG_COOKIE = "cc_lang";
 
-/** Cookie wins; otherwise honour the browser's Accept-Language; default English. */
+/** `?lang=` (shared links) wins, then the cookie, then Accept-Language; default English. */
 export async function getLang(): Promise<Language> {
+  const override = (await headers()).get(LANG_OVERRIDE_HEADER);
+  if (override === "en" || override === "te") return override;
   const fromCookie = (await cookies()).get(LANG_COOKIE)?.value;
   if (fromCookie === "en" || fromCookie === "te") return fromCookie;
   const accept = (await headers()).get("accept-language") ?? "";

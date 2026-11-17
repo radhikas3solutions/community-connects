@@ -125,6 +125,10 @@ const en = {
     contactSoon: "Messaging sellers is coming soon.",
     notFound: "This listing isn't available.",
     back: "Back to listings",
+    share: "Share with your groups",
+    shareWhatsapp: "Share on WhatsApp",
+    copyLink: "Copy link",
+    copied: "Link copied",
   },
   conditions: { new: "New", like_new: "Like new", good: "Good", fair: "Fair", for_parts: "For parts" },
   myListings: {
@@ -266,6 +270,10 @@ const te: Dictionary = {
     contactSoon: "అమ్మకందారులకు సందేశం పంపడం త్వరలో వస్తుంది.",
     notFound: "ఈ ప్రకటన అందుబాటులో లేదు.",
     back: "ప్రకటనలకు తిరిగి వెళ్ళండి",
+    share: "మీ గ్రూప్‌లతో షేర్ చేయండి",
+    shareWhatsapp: "వాట్సాప్‌లో షేర్ చేయండి",
+    copyLink: "లింక్ కాపీ చేయండి",
+    copied: "లింక్ కాపీ అయింది",
   },
   conditions: { new: "కొత్తది", like_new: "కొత్తదానిలా", good: "బాగుంది", fair: "పర్వాలేదు", for_parts: "విడిభాగాలకు" },
   myListings: {
