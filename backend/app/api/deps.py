@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from functools import lru_cache
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -10,6 +11,8 @@ from app.core.security import AuthError, AuthUser, decode_supabase_token
 from app.db.session import get_db
 from app.models import Profile
 from app.models.enums import UserRole
+from app.services.ai_listing import ClaudeListingDrafter, ListingDrafter
+from app.services.storage import PhotoStorage, SupabaseStorage
 
 bearer = HTTPBearer(auto_error=False)
 
@@ -84,3 +87,40 @@ def require_roles(*roles: UserRole) -> Callable[[Profile], Profile]:
 
 require_staff = require_roles(UserRole.MODERATOR, UserRole.ADMIN)
 require_admin = require_roles(UserRole.ADMIN)
+
+
+# ---------------------------------------------------------------- services
+# Tests override these with in-memory fakes via app.dependency_overrides.
+
+
+@lru_cache
+def _supabase_storage() -> SupabaseStorage:
+    return SupabaseStorage(get_settings())
+
+
+def get_storage(settings: Settings = Depends(get_settings)) -> PhotoStorage | None:
+    """Photo storage, or None when it isn't configured (listings then render without photos)."""
+    return _supabase_storage() if settings.storage_configured else None
+
+
+def require_storage(storage: PhotoStorage | None = Depends(get_storage)) -> PhotoStorage:
+    if storage is None:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"code": "storage_unavailable", "message": "Photo uploads are not configured"},
+        )
+    return storage
+
+
+@lru_cache
+def _claude_drafter() -> ClaudeListingDrafter:
+    return ClaudeListingDrafter(get_settings())
+
+
+def get_drafter(settings: Settings = Depends(get_settings)) -> ListingDrafter:
+    if not settings.anthropic_api_key:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"code": "ai_unavailable", "message": "AI drafting is not configured"},
+        )
+    return _claude_drafter()

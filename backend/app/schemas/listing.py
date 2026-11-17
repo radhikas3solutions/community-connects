@@ -54,6 +54,13 @@ class ListingUpdate(ListingBase):
         return self
 
 
+class ListingImageOut(BaseModel):
+    id: uuid.UUID
+    url: str
+    width: int
+    height: int
+
+
 class ListingOut(ORMModel):
     id: uuid.UUID
     listing_type: ListingType
@@ -72,6 +79,12 @@ class ListingOut(ORMModel):
     # Populated from the query's lat/lng columns, not from the raw PostGIS value on the model.
     location: GeoPoint | None = Field(default=None, validation_alias="_computed_location")
     distance_km: float | None = None
+    # Signed, expiring URLs; filled in by the route (the ORM objects only hold storage paths).
+    images: list[ListingImageOut] = Field(default_factory=list, validation_alias="_signed_images")
+    # Claude's suggestion when the listing was AI-drafted (shown to the seller while editing).
+    ai_confidence: float | None = None
+    ai_price_low_cents: int | None = None
+    ai_price_high_cents: int | None = None
     category: CategoryOut | None
     owner: PublicProfileOut
     created_at: datetime

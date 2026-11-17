@@ -2,14 +2,31 @@ import uuid
 from decimal import Decimal
 
 from geoalchemy2 import Geography
-from sqlalchemy import CheckConstraint, ForeignKey, Index, Integer, Numeric, String, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import (
+    CheckConstraint,
+    Computed,
+    ForeignKey,
+    Index,
+    Integer,
+    Numeric,
+    String,
+    Text,
+)
+from sqlalchemy.dialects.postgresql import TSVECTOR, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin
 from app.models.category import Category
 from app.models.enums import ItemCondition, Language, ListingStatus, ListingType, str_enum
+from app.models.listing_image import ListingImage
 from app.models.profile import Profile
+
+# English full-text search document (title weighted above description). Telugu has no
+# built-in Postgres stemmer, so Telugu text is searched with trigram indexes instead.
+SEARCH_VECTOR_SQL = (
+    "setweight(to_tsvector('english', coalesce(title_en, '')), 'A') || "
+    "setweight(to_tsvector('english', coalesce(description_en, '')), 'B')"
+)
 
 
 class Listing(TimestampMixin, Base):
@@ -21,6 +38,16 @@ class Listing(TimestampMixin, Base):
         ),
         CheckConstraint("title_en IS NOT NULL OR title_te IS NOT NULL", name="has_title"),
         Index("ix_listings_status_created", "status", "created_at"),
+        Index("ix_listings_search_vector", "search_vector", postgresql_using="gin"),
+        *(
+            Index(
+                f"ix_listings_{col}_trgm",
+                col,
+                postgresql_using="gin",
+                postgresql_ops={col: "gin_trgm_ops"},
+            )
+            for col in ("title_en", "title_te", "description_te")
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -59,8 +86,18 @@ class Listing(TimestampMixin, Base):
     # Approximate (privacy-fuzzed) pickup location; GIST index created in migration.
     location = mapped_column(Geography(geometry_type="POINT", srid=4326, spatial_index=True))
 
-    # Filled by AI in Phase 2 (0-1 score); kept here so the schema is stable.
+    # Set when Claude drafted the listing (0-1 self-reported confidence), with its price range.
     ai_confidence: Mapped[Decimal | None] = mapped_column(Numeric(4, 3))
+    ai_price_low_cents: Mapped[int | None] = mapped_column(Integer)
+    ai_price_high_cents: Mapped[int | None] = mapped_column(Integer)
+
+    search_vector = mapped_column(TSVECTOR, Computed(SEARCH_VECTOR_SQL, persisted=True))
 
     owner: Mapped[Profile] = relationship(lazy="joined")
     category: Mapped[Category | None] = relationship(lazy="joined")
+    images: Mapped[list[ListingImage]] = relationship(
+        lazy="selectin",
+        order_by=ListingImage.position,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )

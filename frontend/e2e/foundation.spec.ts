@@ -42,6 +42,21 @@ test.describe("UI foundation", () => {
     await expect(page.getByRole("heading", { name: "Sign in to Community Connect" })).toBeVisible();
   });
 
+  test("sell page requires sign-in", async ({ page }) => {
+    await page.goto("/sell");
+    await expect(page).toHaveURL(/\/login\?next=%2Fsell|\/login\?next=\/sell/);
+  });
+
+  test("editing a listing requires sign-in", async ({ page }) => {
+    await page.goto("/listings/00000000-0000-4000-8000-000000000000/edit");
+    await expect(page).toHaveURL(/\/login/);
+  });
+
+  test("malformed listing ids are a 404", async ({ page }) => {
+    const res = await page.goto("/listings/not-a-listing");
+    expect(res?.status()).toBe(404);
+  });
+
   test("unknown routes show a friendly 404", async ({ page }) => {
     const res = await page.goto("/does-not-exist");
     expect(res?.status()).toBe(404);

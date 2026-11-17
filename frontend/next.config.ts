@@ -16,7 +16,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
     remotePatterns: supabaseHost
-      ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/**" }]
+      ? [
+          { protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/**" },
+          // Listing photos: private bucket, short-lived signed URLs (rendered `unoptimized`).
+          { protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/sign/**" },
+        ]
       : [],
   },
   async headers() {

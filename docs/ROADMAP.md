@@ -3,8 +3,8 @@
 | # | Phase | Status |
 |---|-------|--------|
 | 1 | Foundation: repository, auth, database, UI shell | ✅ Done |
-| 2 | AI listings: photo upload → English/Telugu listing | ⏳ Next |
-| 3 | Business & professional directory | |
+| 2 | AI listings: photo upload → English/Telugu listing | ✅ Done |
+| 3 | Business & professional directory | ⏳ Next |
 | 4 | Community content: deals, jobs, movies, events | |
 | 5 | Sharing & engagement: WhatsApp / Facebook / Instagram | |
 | 6 | Trust & safety: moderation and admin dashboard | |
@@ -24,14 +24,21 @@
   browse, login, account, graceful API-down states
 - Tests: pytest unit + PostGIS integration, Playwright e2e (desktop + mobile)
 
-## Phase 2: AI listings
-- Supabase Storage bucket `listing-photos` (private upload, signed URLs, size/type limits,
-  EXIF/GPS stripping), `listing_images` table
-- `POST /api/v1/ai/draft-listing`: Claude vision (`claude-opus-5-5`) with structured output
-  → title/description in EN + TE, category, condition, suggested price range, confidence
-- Sell flow: camera/upload → AI draft → edit → publish; draft status until confirmed
-- Postgres full-text search (English) + trigram for Telugu; listing detail page
-- Rate limiting per user on AI endpoints; cost logging
+## Phase 2: AI listings ✅
+- Private Supabase Storage bucket `listing-photos`, written only by the API (service-role
+  key) and read through batch-signed, expiring URLs; `listing_images` table
+- Photos re-encoded server-side (JPEG/PNG/WebP in, JPEG out, ≤2048 px, 12 MB cap,
+  decompression-bomb guard), dropping all EXIF/GPS; browser pre-shrinks before upload
+- `POST /api/v1/ai/draft-listing`: Claude vision (`claude-opus-5-5`, effort `medium`,
+  server-side refusal fallback) with a strict JSON schema → EN + TE title/description,
+  category, condition, local used-price range, confidence, and `no_item` / `prohibited` /
+  `unclear_photo` flags
+- Sell flow: photos → AI draft → review/edit (both languages, photos, price hint) → publish;
+  owner-only draft visibility; add/remove photos; "My listings" on the account page
+- Listing detail page with gallery and the other language on demand; photos on cards
+- Weighted English full-text search + `pg_trgm` for Telugu; `sort=relevance`
+- Per-user AI quotas (hourly + daily, slot reserved before the call) and `ai_usage`
+  cost/latency logging
 
 ## Phase 3: Directory
 - `businesses` table (owner, hours, languages spoken, service area polygon, verified flag),
@@ -56,5 +63,9 @@
 
 ## Open items
 - Native-speaker review of all Telugu copy (`backend/app/seed.py`, `frontend/src/i18n`)
+  and a sample of AI-written Telugu listings (tune `SYSTEM_PROMPT` in
+  `backend/app/services/ai_listing.py` from the feedback)
+- An eval set of real item photos to check draft quality and price accuracy before launch
+- Photo reordering / choosing the cover photo; adding photos from the edit page (API exists)
 - Privacy policy & terms pages
 - Mobile navigation menu (desktop nav is hidden below `md`)

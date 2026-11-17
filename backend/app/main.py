@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import categories, health, listings, me
+from app.api.routes import ai, categories, health, listings, me
 from app.core.config import get_settings
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -28,7 +28,7 @@ def create_app() -> FastAPI:
 
     app.include_router(health.router)
     v1 = APIRouter(prefix="/api/v1")
-    for module in (me, categories, listings):
+    for module in (me, categories, listings, ai):
         v1.include_router(module.router)
     app.include_router(v1)
     return app

@@ -61,3 +61,19 @@ export const searchListings = (params: Record<string, string | undefined>) => {
 };
 
 export const getMe = (token: string) => apiFetch<Profile>("/api/v1/me", { token });
+
+/**
+ * A single listing. Pass the viewer's token to see their own drafts.
+ * Returns `null` when it doesn't exist (or isn't visible); throws when the API is down.
+ */
+export async function getListing(id: string, token?: string): Promise<Listing | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+  try {
+    return await apiFetch<Listing>(`/api/v1/listings/${id}`, { token, revalidate: 30 });
+  } catch (err) {
+    if (err instanceof ApiError && (err.status === 404 || err.status === 422)) return null;
+    throw err;
+  }
+}
+
+export const getMyListings = (token: string) => apiFetch<Listing[]>("/api/v1/listings/mine", { token });

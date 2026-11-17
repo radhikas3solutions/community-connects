@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { getDictionary } from "@/i18n/server";
-import { getMe } from "@/lib/api";
+import { getMe, getMyListings } from "@/lib/api";
+import { formatPrice, localized } from "@/lib/format";
 import { getSession } from "@/lib/supabase/server";
-import type { Profile } from "@/lib/types";
+import type { Listing, Profile } from "@/lib/types";
 
 export const metadata: Metadata = { title: "My account" };
 
@@ -21,6 +23,9 @@ export default async function AccountPage() {
   } catch (err) {
     console.error("[account] /me failed", err);
   }
+  const listings: Listing[] | null = profile
+    ? await getMyListings(session.accessToken).catch(() => null)
+    : null;
 
   return (
     <Container className="max-w-2xl py-10">
@@ -48,6 +53,41 @@ export default async function AccountPage() {
           </Button>
         </form>
       </div>
+
+      {listings && (
+        <section className="mt-10">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-2xl font-bold">{t.myListings.title}</h2>
+            <Link href="/sell" className="text-sm font-semibold text-brand-700 hover:underline">
+              📸 {t.nav.sell}
+            </Link>
+          </div>
+          {listings.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-line p-6 text-center text-muted">{t.myListings.empty}</p>
+          ) : (
+            <ul className="divide-y divide-line rounded-[var(--radius-card)] border border-line bg-surface">
+              {listings.map((l) => (
+                <li key={l.id} className="flex items-center gap-3 p-3">
+                  <span
+                    className={`w-20 shrink-0 rounded-full px-2 py-0.5 text-center text-xs font-semibold ${
+                      l.status === "active" ? "bg-brand-100 text-brand-700" : "bg-canvas text-muted"
+                    }`}
+                  >
+                    {t.myListings.status[l.status]}
+                  </span>
+                  <Link href={`/listings/${l.id}`} className="min-w-0 flex-1 truncate font-medium hover:underline" lang={lang}>
+                    {localized(l.title_en, l.title_te, lang)}
+                  </Link>
+                  <span className="hidden text-sm text-muted sm:inline">{formatPrice(l, lang)}</span>
+                  <Link href={`/listings/${l.id}/edit`} className="text-sm font-semibold text-brand-700 hover:underline">
+                    {t.myListings.edit}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
     </Container>
   );
 }

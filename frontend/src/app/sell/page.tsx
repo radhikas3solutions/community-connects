@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
-import { ButtonLink } from "@/components/ui/Button";
+import { redirect } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { getDictionary } from "@/i18n/server";
+import { getSession } from "@/lib/supabase/server";
+import { SellFlow } from "./SellFlow";
 
 export const metadata: Metadata = { title: "Sell or give" };
 
-// Protected by the proxy. The AI photo-to-listing flow lands here in Phase 2.
 export default async function SellPage() {
-  const { t } = await getDictionary();
+  const session = await getSession();
+  if (!session) redirect("/login?next=/sell");
+  const { lang, t } = await getDictionary();
+
   return (
-    <Container className="max-w-xl py-16 text-center">
-      <p aria-hidden className="text-5xl">
-        📸
+    <Container className="max-w-xl py-10">
+      <h1 className="text-3xl font-bold" lang={lang}>
+        📸 {t.sell.title}
+      </h1>
+      <p className="mt-2 mb-8 text-muted" lang={lang}>
+        {t.sell.intro}
       </p>
-      <h1 className="mt-4 text-3xl font-bold">{t.home.ctaSell}</h1>
-      <p className="mt-2 text-muted">{t.home.comingSoon}</p>
-      <ButtonLink href="/listings" variant="secondary" className="mt-6">
-        {t.home.ctaBrowse}
-      </ButtonLink>
+      <SellFlow t={t.sell} />
     </Container>
   );
 }

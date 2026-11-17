@@ -154,3 +154,33 @@ def test_unknown_category_rejected(db_client: TestClient) -> None:
         headers=h,
     )
     assert r.status_code == 422
+
+
+def test_full_text_search_english_stemming_and_telugu(db_client: TestClient) -> None:
+    _, h = _user()
+    _create(
+        db_client,
+        h,
+        title_en="Silk saree with zari border",
+        title_te="జరీ అంచు పట్టు చీర",
+        description_en="Worn once to a wedding.",
+    )
+    _create(db_client, h, title_en="Wooden study desk", description_en="Fits a laptop and books.")
+
+    def titles(**params: str) -> list[str]:
+        r = db_client.get("/api/v1/listings", params=params).json()
+        return [i["title_en"] for i in r["items"]]
+
+    assert titles(q="sarees") == ["Silk saree with zari border"]  # stemmed plural
+    assert titles(q="weddings") == ["Silk saree with zari border"]  # description match
+    assert titles(q="పట్టు") == ["Silk saree with zari border"]  # Telugu substring
+    assert titles(q="desk -laptop") == []  # websearch syntax: exclusion
+    assert titles(q="stud") == ["Wooden study desk"]  # partial English title
+
+
+def test_relevance_sort_prefers_title_matches(db_client: TestClient) -> None:
+    _, h = _user()
+    _create(db_client, h, title_en="Bookshelf", description_en="Holds a lamp nicely.")
+    _create(db_client, h, title_en="Brass lamp", description_en="Antique.")
+    r = db_client.get("/api/v1/listings", params={"q": "lamp", "sort": "relevance"}).json()
+    assert [i["title_en"] for i in r["items"]] == ["Brass lamp", "Bookshelf"]

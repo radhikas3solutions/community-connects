@@ -5,6 +5,15 @@ export type UserRole = "user" | "business" | "moderator" | "admin";
 export type CategoryKind = "marketplace" | "business" | "community";
 export type ListingType = "sell" | "buy" | "free";
 export type ListingStatus = "draft" | "pending_review" | "active" | "sold" | "removed";
+export type ItemCondition = "new" | "like_new" | "good" | "fair" | "for_parts";
+
+export interface ListingImage {
+  id: string;
+  /** Signed, expiring URL: don't persist it. */
+  url: string;
+  width: number;
+  height: number;
+}
 
 export interface Category {
   id: number;
@@ -34,7 +43,7 @@ export interface Listing {
   id: string;
   listing_type: ListingType;
   status: ListingStatus;
-  condition: string | null;
+  condition: ItemCondition | null;
   source_language: Language;
   title_en: string | null;
   title_te: string | null;
@@ -47,6 +56,10 @@ export interface Listing {
   zip_code: string | null;
   location: { lat: number; lng: number } | null;
   distance_km: number | null;
+  images: ListingImage[];
+  ai_confidence: number | null;
+  ai_price_low_cents: number | null;
+  ai_price_high_cents: number | null;
   category: Category | null;
   owner: { id: string; display_name: string | null; avatar_url: string | null; city: string | null };
   created_at: string;
@@ -59,3 +72,6 @@ export interface Page<T> {
   limit: number;
   offset: number;
 }
+
+/** Error body from the API: `detail` is a string, or `{code, message}` on photo/AI routes. */
+export type ApiErrorDetail = string | { code: string; message: string };
