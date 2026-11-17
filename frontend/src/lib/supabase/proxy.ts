@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { SUPABASE_ANON_KEY, SUPABASE_URL, isAuthConfigured } from "@/lib/env";
+import { requestOrigin } from "@/lib/request-origin";
 
 /** Paths that require a signed-in user (optimistic check; the API enforces auth). */
 const PROTECTED_PREFIXES = ["/account", "/sell", "/admin"];
@@ -36,9 +37,7 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   if (!signedIn && PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.search = `?next=${encodeURIComponent(pathname)}`;
+    const url = new URL(`/login?next=${encodeURIComponent(pathname)}`, requestOrigin(request));
     return NextResponse.redirect(url);
   }
   return response;
