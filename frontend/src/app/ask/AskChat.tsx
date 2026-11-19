@@ -301,7 +301,10 @@ function BusinessRow({ b, lang, t }: { b: Business; lang: Language; t: Dictionar
         {(b.phone || whatsapp || map) && (
           <div className="mt-2 flex flex-wrap gap-2 text-sm">
             {b.phone && (
-              <a href={telHref(b.phone)} className="rounded-full bg-brand-600 px-3 py-1 font-semibold text-white">
+              <a
+                href={telHref(b.phone)}
+                className="rounded-full bg-accent-500 px-3 py-1 font-semibold text-white hover:bg-accent-600"
+              >
                 📞 {t.call}
               </a>
             )}

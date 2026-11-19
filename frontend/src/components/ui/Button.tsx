@@ -7,7 +7,7 @@ type Size = "sm" | "md" | "lg";
 const base =
   "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60";
 const variants: Record<Variant, string> = {
-  primary: "bg-brand-600 text-white hover:bg-brand-700",
+  primary: "bg-accent-500 text-white hover:bg-accent-600",
   accent: "bg-accent-500 text-white hover:bg-accent-600",
   secondary: "border border-line bg-surface text-ink hover:bg-brand-50",
   ghost: "text-ink hover:bg-brand-50",

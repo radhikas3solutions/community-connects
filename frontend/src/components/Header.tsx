@@ -9,8 +9,8 @@ export function Header({ t, lang, signedIn }: { t: Dictionary; lang: Language; s
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur">
       <Container className="flex h-16 items-center gap-4">
-        <Link href="/" className="flex items-center gap-2 font-bold text-brand-700">
-          <span aria-hidden className="grid size-8 place-items-center rounded-xl bg-brand-600 text-white">
+        <Link href="/" className="flex items-center gap-2 font-bold text-accent-600">
+          <span aria-hidden className="grid size-8 place-items-center rounded-xl bg-accent-500 text-white">
             CC
           </span>
           <span className="hidden sm:inline">{t.brand}</span>

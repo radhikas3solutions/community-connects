@@ -58,7 +58,7 @@ export function BusinessCard({ business: b, lang, t }: { business: Business; lan
             {b.phone && (
               <a
                 href={telHref(b.phone)}
-                className="rounded-full bg-brand-600 px-3 py-1 font-semibold text-white hover:bg-brand-700"
+                className="rounded-full bg-accent-500 px-3 py-1 font-semibold text-white hover:bg-accent-600"
               >
                 📞 {t.directory.call}
               </a>

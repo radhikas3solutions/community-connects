@@ -63,7 +63,7 @@ export function AskWidget({ lang, t, signedIn }: { lang: Language; t: Dictionary
               <p className="text-muted">{t.signInPrompt}</p>
               <Link
                 href={`/login?next=${encodeURIComponent(pathname)}`}
-                className="inline-block rounded-full bg-brand-600 px-5 py-2 font-semibold text-white"
+                className="inline-block rounded-full bg-accent-500 px-5 py-2 font-semibold text-white hover:bg-accent-600"
               >
                 {t.signIn}
               </Link>
@@ -77,7 +77,7 @@ export function AskWidget({ lang, t, signedIn }: { lang: Language; t: Dictionary
           type="button"
           onClick={() => setOpen(true)}
           aria-haspopup="dialog"
-          className="fixed right-4 bottom-4 z-40 flex items-center gap-2 rounded-full bg-brand-600 px-5 py-3 font-semibold text-white shadow-lg hover:bg-brand-700 sm:right-6 sm:bottom-6"
+          className="fixed right-4 bottom-4 z-40 flex items-center gap-2 rounded-full bg-accent-500 px-5 py-3 font-semibold text-white shadow-lg hover:bg-accent-600 sm:right-6 sm:bottom-6"
           lang={lang}
         >
           <span aria-hidden>✨</span> {t.launcher}

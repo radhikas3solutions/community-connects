@@ -47,7 +47,7 @@ export function LanguageToggle({ lang }: { lang: Language }) {
           aria-pressed={lang === code}
           onClick={() => choose(code)}
           className={`rounded-full px-3 py-1.5 transition-colors ${
-            lang === code ? "bg-brand-600 text-white" : "text-muted hover:text-ink"
+            lang === code ? "bg-accent-500 text-white" : "text-muted hover:text-accent-600"
           }`}
         >
           {label}
