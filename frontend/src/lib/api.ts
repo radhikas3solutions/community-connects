@@ -24,8 +24,10 @@ export async function apiFetch<T>(path: string, opts: FetchOpts = {}): Promise<T
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
-    // Authenticated responses are per-user: never cache them.
-    ...(token ? { cache: "no-store" as const } : { next: { revalidate: revalidate ?? 60 } }),
+    // Authenticated responses are per-user: never cache them. An explicit `cache` wins.
+    ...(token || init.cache
+      ? { cache: init.cache ?? ("no-store" as const) }
+      : { next: { revalidate: revalidate ?? 60 } }),
   });
   if (!res.ok) {
     const detail = await res.json().catch(() => ({}));
@@ -45,19 +47,16 @@ async function safe<T>(p: Promise<T>, fallback: T): Promise<{ data: T; ok: boole
 }
 
 export const getCategories = (kind?: CategoryKind) =>
-  safe(
-    apiFetch<Category[]>(`/api/v1/categories${kind ? `?kind=${kind}` : ""}`, { revalidate: 300 }),
-    [] as Category[],
-  );
+  safe(apiFetch<Category[]>(`/api/v1/categories${kind ? `?kind=${kind}` : ""}`, { revalidate: 300 }), [] as Category[]);
 
 export const searchListings = (params: Record<string, string | undefined>) => {
-  const qs = new URLSearchParams(
-    Object.entries(params).filter((e): e is [string, string] => Boolean(e[1])),
-  );
-  return safe(
-    apiFetch<Page<Listing>>(`/api/v1/listings?${qs}`, { revalidate: 30 }),
-    { items: [], total: 0, limit: 24, offset: 0 } as Page<Listing>,
-  );
+  const qs = new URLSearchParams(Object.entries(params).filter((e): e is [string, string] => Boolean(e[1])));
+  return safe(apiFetch<Page<Listing>>(`/api/v1/listings?${qs}`, { revalidate: 30 }), {
+    items: [],
+    total: 0,
+    limit: 24,
+    offset: 0,
+  } as Page<Listing>);
 };
 
 export const getMe = (token: string) => apiFetch<Profile>("/api/v1/me", { token });
@@ -82,20 +81,21 @@ export const getMyListings = (token: string) => apiFetch<Listing[]>("/api/v1/lis
 
 /** Directory search. With a token, individuals' contact details are included. */
 export const searchDirectory = (params: Record<string, string | undefined>, token?: string) => {
-  const qs = new URLSearchParams(
-    Object.entries(params).filter((e): e is [string, string] => Boolean(e[1])),
-  );
-  return safe(
-    apiFetch<Page<Business>>(`/api/v1/businesses?${qs}`, { token, revalidate: 60 }),
-    { items: [], total: 0, limit: 24, offset: 0 } as Page<Business>,
-  );
+  const qs = new URLSearchParams(Object.entries(params).filter((e): e is [string, string] => Boolean(e[1])));
+  return safe(apiFetch<Page<Business>>(`/api/v1/businesses?${qs}`, { token, revalidate: 60 }), {
+    items: [],
+    total: 0,
+    limit: 24,
+    offset: 0,
+  } as Page<Business>);
 };
 
 /** One entry; `null` when it doesn't exist or isn't visible to this viewer. Throws when the API is down. */
 export async function getBusiness(id: string, token?: string): Promise<Business | null> {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
   try {
-    return await apiFetch<Business>(`/api/v1/businesses/${id}`, { token, revalidate: 60 });
+    // Not cached: a cached copy would outlive a removed entry (failed revalidation keeps it).
+    return await apiFetch<Business>(`/api/v1/businesses/${id}`, { token, cache: "no-store" });
   } catch (err) {
     if (err instanceof ApiError && (err.status === 404 || err.status === 422)) return null;
     throw err;
@@ -103,5 +103,4 @@ export async function getBusiness(id: string, token?: string): Promise<Business 
 }
 
 export const getMyEntries = (token: string) => apiFetch<Business[]>("/api/v1/businesses/mine", { token });
-export const getReviewQueue = (token: string) =>
-  apiFetch<Business[]>("/api/v1/businesses/review-queue", { token });
+export const getReviewQueue = (token: string) => apiFetch<Business[]>("/api/v1/businesses/review-queue", { token });
