@@ -108,12 +108,38 @@ export default async function BusinessPage({ params }: { params: Params }) {
             {[category, b.kind === "individual" ? d.individual : null].filter(Boolean).join(" · ")}
             {b.is_verified && <span className="ml-2 font-semibold text-brand-700">✓ {d.verified}</span>}
             {b.source === "npi" && <span className="ml-2 text-sm font-semibold">📋 {d.publicRecord}</span>}
+            {b.source === "osm" && <span className="ml-2 text-sm font-semibold">🗺️ {d.osmRecord}</span>}
           </p>
         </div>
       </header>
       {b.source === "npi" && (
         <p className="mt-4 rounded-xl border border-line bg-canvas p-3 text-sm text-muted" lang={lang}>
           📋 {d.publicRecordNote}
+        </p>
+      )}
+      {b.source === "osm" && (
+        <p className="mt-4 rounded-xl border border-line bg-canvas p-3 text-sm text-muted" lang={lang}>
+          🗺️ {d.osmRecordNote}{" "}
+          {b.source_url && (
+            <a
+              href={b.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-brand-700 hover:underline"
+            >
+              {d.osmView}
+            </a>
+          )}
+          <span className="mt-1 block text-xs">
+            <a
+              href="https://www.openstreetmap.org/copyright"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {d.osmCredit}
+            </a>
+          </span>
         </p>
       )}
 

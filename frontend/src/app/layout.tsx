@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans_Telugu } from "next/font/google";
 import type { ReactNode } from "react";
+import { AskWidget } from "@/components/AskWidget";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { getDictionary } from "@/i18n/server";
@@ -31,7 +32,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang={lang} className={`${inter.variable} ${telugu.variable}`}>
       <body className="flex min-h-dvh flex-col font-sans">
-        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-surface focus:p-2">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-surface focus:p-2"
+        >
           Skip to content
         </a>
         <Header t={t} lang={lang} signedIn={Boolean(session)} />
@@ -39,6 +43,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           {children}
         </main>
         <Footer t={t} />
+        <AskWidget lang={lang} t={t.ask} signedIn={Boolean(session)} />
       </body>
     </html>
   );

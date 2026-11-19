@@ -105,7 +105,7 @@ class Business(TimestampMixin, Base):
     review_note: Mapped[str | None] = mapped_column(String(500))  # moderator's reason on reject
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    # Imported from a public dataset ("npi" = the NPI Registry); null = added by a person.
+    # Imported from a public dataset ("npi" = NPI Registry, "osm" = OpenStreetMap); null = a person.
     source: Mapped[str | None] = mapped_column(String(20))
     external_id: Mapped[str | None] = mapped_column(String(64))
     # What the import knew (provider names, NPI numbers, specialties), to merge re-imports.

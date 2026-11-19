@@ -173,8 +173,10 @@ class BusinessOut(BaseModel):
     hours: str | None
     languages: list[str]
     is_verified: bool
-    # "npi" = imported from the public NPI Registry; null = added by a person.
+    # Imported from public data: "npi" = NPI Registry, "osm" = OpenStreetMap; null = a person.
     source: str | None = None
+    # Where the imported record lives (OpenStreetMap entries link back for attribution).
+    source_url: str | None = None
     category: CategoryOut | None
     menu: list[MenuItemOut]
     # True when an individual's contact details are withheld from a signed-out visitor.

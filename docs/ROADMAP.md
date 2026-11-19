@@ -56,7 +56,8 @@ Done:
   people describe their business or service in English or Telugu; each turn returns a reply
   plus a validated draft shown as a live preview; the person ticks consent and submits it
   to the normal review queue (the AI never saves anything). ~1-3¢ per turn, own rate limit
-- "Ask" search assistant (`/ask`, `POST /assistant/ask`, also the search box on the home page):
+- "Ask" search assistant (`/ask`, `POST /assistant/ask`, the search box on the home page, and the
+  floating "✨ Ask CC" button on every page; one conversation per tab, kept across pages):
   questions like "dentist in Aldie" in English or Telugu; Claude calls read-only
   `search_directory` / `search_marketplace` tools, widens to neighboring towns when a town
   has no matches, and answers with a short reply plus result cards (call / WhatsApp). Cards
@@ -68,10 +69,18 @@ Done:
   live but unverified with a "Public record" label; re-import updates (keyed on ZIP + phone)
   and never revives removed/rejected entries; skips phones a member already listed.
   First run: 12 Loudoun/western Fairfax ZIPs -> 484 practices
+- OpenStreetMap restaurant import (same admin page, `POST /admin/import/osm`): named restaurants,
+  fast food and cafés per area via the Overpass API (open data, ODbL: every entry shows
+  "© OpenStreetMap contributors" and links to its OSM record). Cuisine, diet (vegetarian/halal),
+  takeout/delivery and hours go into the entry; Dulles terminals skipped; missing or misspelled
+  towns get the nearest town centre; places mapped twice or already listed are skipped.
+  First run: Loudoun + Herndon/Chantilly/Centreville -> 1,176 places (39 Indian)
 
 Still to do:
 - Re-run the NPI import every few months (a scheduled job); chains with one central phone
   number currently collapse to their first ZIP
+- Restaurants closed since the last OSM import stay listed until a moderator removes them
+  (mark entries no longer in OSM on re-import); about half of OSM places have no phone number
 - Claim-your-business flow, reviews/ratings, map view (needs geocoding), photos/logos,
   opening-hours structure, duplicate detection
 

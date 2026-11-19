@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { BrowserApiError, browserApi } from "@/lib/browser-api";
@@ -15,15 +15,42 @@ type Answer = { reply: string; businesses: Business[]; listings: Listing[] };
 type Turn = Message & { businesses?: Business[]; listings?: Listing[] };
 
 const MAX_MESSAGES = 28; // the API accepts 30; leave room for the next question
+// One conversation per browser tab, shared by the floating widget and the /ask page.
+export const ASK_STORAGE_KEY = "askcc:conversation";
+
+function loadTurns(): Turn[] {
+  try {
+    const raw = sessionStorage.getItem(ASK_STORAGE_KEY);
+    const parsed: unknown = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? (parsed as Turn[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveTurns(turns: Turn[]) {
+  try {
+    if (turns.length) sessionStorage.setItem(ASK_STORAGE_KEY, JSON.stringify(turns));
+    else sessionStorage.removeItem(ASK_STORAGE_KEY);
+  } catch {
+    // Storage blocked or full: the chat still works, it just won't survive a reload.
+  }
+}
 
 export function AskChat({
   lang,
   t,
-  initialQuestion,
+  initialQuestion = "",
+  compact = false,
+  active = true,
 }: {
   lang: Language;
   t: Dictionary["ask"];
-  initialQuestion: string;
+  initialQuestion?: string;
+  /** Floating-widget layout: fills its panel, one result per row. */
+  compact?: boolean;
+  /** Focus the input when this turns true (the widget opening). */
+  active?: boolean;
 }) {
   const router = useRouter();
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -32,6 +59,27 @@ export function AskChat({
   const [error, setError] = useState<string | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
   const askedInitial = useRef(false);
+  const loaded = useRef(false);
+  const input = useRef<HTMLInputElement>(null);
+  const inputId = useId();
+
+  // Save after the first load (this effect runs before the load effect on mount).
+  useEffect(() => {
+    if (loaded.current) saveTurns(turns);
+  }, [turns]);
+
+  // Pick up the conversation from another page (unless a new question arrived via ?q=).
+  useEffect(() => {
+    // Read after mount, not during render: the server has no sessionStorage (hydration).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!initialQuestion) setTurns(loadTurns());
+    loaded.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (active && compact) input.current?.focus();
+  }, [active, compact]);
 
   useEffect(() => {
     bottom.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -85,7 +133,11 @@ export function AskChat({
   return (
     <section
       aria-label={t.title}
-      className="mt-6 flex min-h-[28rem] flex-col rounded-[var(--radius-card)] border border-line bg-surface"
+      className={
+        compact
+          ? "flex h-full min-h-0 flex-col bg-surface"
+          : "mt-6 flex min-h-[28rem] flex-col rounded-[var(--radius-card)] border border-line bg-surface"
+      }
     >
       <ol className="flex-1 space-y-4 overflow-y-auto p-4" aria-live="polite">
         <Bubble mine={false} lang={lang}>
@@ -97,14 +149,14 @@ export function AskChat({
               {turn.content}
             </Bubble>
             {!!turn.businesses?.length && (
-              <Results title={t.fromDirectory} lang={lang}>
+              <Results title={t.fromDirectory} lang={lang} compact={compact}>
                 {turn.businesses.map((b) => (
                   <BusinessRow key={b.id} b={b} lang={lang} t={t} />
                 ))}
               </Results>
             )}
             {!!turn.listings?.length && (
-              <Results title={t.fromMarketplace} lang={lang}>
+              <Results title={t.fromMarketplace} lang={lang} compact={compact}>
                 {turn.listings.map((l) => (
                   <ListingRow key={l.id} l={l} lang={lang} t={t} />
                 ))}
@@ -143,11 +195,12 @@ export function AskChat({
       )}
 
       <form onSubmit={onSubmit} className="flex gap-2 border-t border-line p-3">
-        <label htmlFor="ask-input" className="sr-only">
+        <label htmlFor={inputId} className="sr-only">
           {t.placeholder}
         </label>
         <input
-          id="ask-input"
+          id={inputId}
+          ref={input}
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={t.placeholder}
@@ -206,13 +259,23 @@ function Bubble({
   );
 }
 
-function Results({ title, lang, children }: { title: string; lang: Language; children: React.ReactNode }) {
+function Results({
+  title,
+  lang,
+  compact,
+  children,
+}: {
+  title: string;
+  lang: Language;
+  compact: boolean;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="ml-0 space-y-2 sm:ml-6">
+    <div className={compact ? "space-y-2" : "ml-0 space-y-2 sm:ml-6"}>
       <p className="text-xs font-bold tracking-wide text-muted uppercase" lang={lang}>
         {title}
       </p>
-      <ul className="grid gap-2 sm:grid-cols-2">{children}</ul>
+      <ul className={compact ? "grid gap-2" : "grid gap-2 sm:grid-cols-2"}>{children}</ul>
     </div>
   );
 }

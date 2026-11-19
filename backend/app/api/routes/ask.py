@@ -128,7 +128,7 @@ class DatabaseTools:
                     "languages": out.languages,
                     "phone": out.phone,
                     "verified": out.is_verified,
-                    "from_public_records": out.source == "npi",
+                    "from_public_records": out.source is not None,
                     "about": _clip(out.description_en, 240),
                 }
             )

@@ -16,6 +16,7 @@ from app.services.ai_listing import ClaudeListingDrafter, ListingDrafter
 from app.services.ai_menu import ClaudeMenuReader, MenuReader
 from app.services.ai_search import ClaudeSearchAgent, SearchAgent
 from app.services.npi import HttpNpiClient, NpiClient
+from app.services.osm import HttpOsmClient, OsmClient
 from app.services.storage import PhotoStorage, SupabaseStorage
 
 bearer = HTTPBearer(auto_error=False)
@@ -179,3 +180,12 @@ def _http_npi_client() -> HttpNpiClient:
 
 def get_npi_client() -> NpiClient:
     return _http_npi_client()
+
+
+@lru_cache
+def _http_osm_client() -> HttpOsmClient:
+    return HttpOsmClient()
+
+
+def get_osm_client() -> OsmClient:
+    return _http_osm_client()

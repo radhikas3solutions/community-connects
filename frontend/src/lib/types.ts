@@ -108,7 +108,8 @@ export interface Business {
   hours: string | null;
   languages: string[];
   is_verified: boolean;
-  source: string | null; // "npi" = imported from the public NPI Registry
+  source: string | null; // imported from public data: "npi" = NPI Registry, "osm" = OpenStreetMap
+  source_url?: string | null; // the OpenStreetMap record (attribution, and where to fix it)
   category: Category | null;
   menu: MenuItem[];
   /** An individual's phone/email withheld from a signed-out visitor. */

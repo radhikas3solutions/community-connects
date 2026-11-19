@@ -32,6 +32,11 @@ export function BusinessCard({ business: b, lang, t }: { business: Business; lan
               📋 {t.directory.publicRecord}
             </span>
           )}
+          {b.source === "osm" && (
+            <span className="ml-2 align-middle text-xs font-semibold text-muted" lang={lang}>
+              🗺️ {t.directory.osmRecord}
+            </span>
+          )}
         </h3>
         {category && (
           <p className="text-sm text-muted" lang={lang}>

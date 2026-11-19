@@ -161,6 +161,10 @@ const en = {
     wanted: "Wanted",
     verified: "Verified",
     note: "Answers come only from entries on this site. Always check details with the provider.",
+    launcher: "Ask CC",
+    close: "Close",
+    signInPrompt: "Sign in to ask Community Connect about doctors, tutors, helpers, restaurants and items for sale.",
+    signIn: "Sign in",
   },
   assistant: {
     title: "Add your business or service",
@@ -213,6 +217,11 @@ const en = {
     publicRecord: "Public record",
     publicRecordNote:
       "Listed from the NPI Registry, the US government's public list of licensed healthcare providers. Hours, languages and other details aren't confirmed, so please call before visiting.",
+    osmRecord: "From OpenStreetMap",
+    osmRecordNote:
+      "Listed from OpenStreetMap, a free map that anyone can edit. Hours and details may be out of date, so please call before visiting.",
+    osmCredit: "© OpenStreetMap contributors",
+    osmView: "View or fix on OpenStreetMap",
     individual: "Individual",
     call: "Call",
     whatsapp: "WhatsApp",
@@ -332,7 +341,16 @@ const en = {
     failed: "Failed",
     total: "Total",
     open: "Open the directory",
-    link: "Import doctors & dentists",
+    link: "Import public data",
+    pageTitle: "Import public data",
+  },
+  osmImport: {
+    title: "Restaurants, fast food & cafés from OpenStreetMap",
+    intro:
+      "Pulls named restaurants, fast food places and cafés from OpenStreetMap (open data, reused with attribution) for the areas below. Places inside the Dulles airport terminals are skipped, a place mapped twice or already in the directory (same phone, or same name and address) is skipped, and entries go live unverified with a \"From OpenStreetMap\" label. Each area takes about a minute. Running it again updates entries and never brings back ones you removed.",
+    areas: "Areas",
+    places: "Places",
+    open: "Open restaurants",
   },
   myEntries: {
     title: "My directory entries",
@@ -506,6 +524,10 @@ const te: Dictionary = {
     wanted: "కావాలి",
     verified: "ధృవీకరించబడింది",
     note: "సమాధానాలు ఈ సైట్‌లోని వివరాల నుండే వస్తాయి. వివరాలను ఎప్పుడూ వారితో సరిచూసుకోండి.",
+    launcher: "CCని అడగండి",
+    close: "మూసివేయండి",
+    signInPrompt: "డాక్టర్లు, ట్యూటర్లు, సహాయకులు, రెస్టారెంట్లు, అమ్మకానికి ఉన్న వస్తువుల గురించి అడగడానికి సైన్ ఇన్ చేయండి.",
+    signIn: "సైన్ ఇన్",
   },
   assistant: {
     title: "మీ వ్యాపారం లేదా సేవను చేర్చండి",
@@ -558,6 +580,11 @@ const te: Dictionary = {
     publicRecord: "ప్రభుత్వ రికార్డు",
     publicRecordNote:
       "లైసెన్స్ ఉన్న వైద్య సేవల ప్రదాతల అమెరికా ప్రభుత్వ పబ్లిక్ జాబితా (NPI Registry) నుండి తీసుకున్నది. సమయాలు, భాషలు, ఇతర వివరాలు ధృవీకరించలేదు, కాబట్టి వెళ్ళే ముందు ఫోన్ చేసి కనుక్కోండి.",
+    osmRecord: "ఓపెన్‌స్ట్రీట్‌మ్యాప్ నుండి",
+    osmRecordNote:
+      "ఎవరైనా సరిదిద్దగల ఉచిత మ్యాప్ అయిన ఓపెన్‌స్ట్రీట్‌మ్యాప్ నుండి తీసుకున్నది. సమయాలు, వివరాలు పాతవై ఉండొచ్చు, కాబట్టి వెళ్ళే ముందు ఫోన్ చేసి కనుక్కోండి.",
+    osmCredit: "© OpenStreetMap contributors",
+    osmView: "ఓపెన్‌స్ట్రీట్‌మ్యాప్‌లో చూడండి లేదా సరిదిద్దండి",
     individual: "వ్యక్తి",
     call: "కాల్ చేయండి",
     whatsapp: "వాట్సాప్",
@@ -677,7 +704,16 @@ const te: Dictionary = {
     failed: "విఫలమైంది",
     total: "మొత్తం",
     open: "డైరెక్టరీ తెరవండి",
-    link: "డాక్టర్లు & డెంటిస్టులను దిగుమతి చేయండి",
+    link: "పబ్లిక్ డేటా దిగుమతి",
+    pageTitle: "పబ్లిక్ డేటా దిగుమతి",
+  },
+  osmImport: {
+    title: "ఓపెన్‌స్ట్రీట్‌మ్యాప్ నుండి రెస్టారెంట్లు, ఫాస్ట్ ఫుడ్, కేఫ్‌లు",
+    intro:
+      "కింది ప్రాంతాల కోసం ఓపెన్‌స్ట్రీట్‌మ్యాప్ (ఓపెన్ డేటా, మూలం పేర్కొని వాడతాం) నుండి పేరున్న రెస్టారెంట్లు, ఫాస్ట్ ఫుడ్, కేఫ్‌లను తీసుకుంటుంది. డల్లెస్ ఎయిర్‌పోర్ట్ టెర్మినల్స్ లోపలివి, రెండుసార్లు ఉన్నవి, ఇప్పటికే డైరెక్టరీలో ఉన్నవి (అదే ఫోన్, లేదా అదే పేరు, చిరునామా) వదిలేస్తాం. ఎంట్రీలు \"ఓపెన్‌స్ట్రీట్‌మ్యాప్ నుండి\" గుర్తుతో వెంటనే కనిపిస్తాయి. ఒక్కో ప్రాంతానికి సుమారు ఒక నిమిషం పడుతుంది. మళ్ళీ నడిపితే ఎంట్రీలు అప్‌డేట్ అవుతాయి; మీరు తీసేసినవి తిరిగి రావు.",
+    areas: "ప్రాంతాలు",
+    places: "స్థలాలు",
+    open: "రెస్టారెంట్లు చూడండి",
   },
   myEntries: {
     title: "నా డైరెక్టరీ వివరాలు",
