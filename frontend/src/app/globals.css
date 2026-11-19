@@ -1,28 +1,29 @@
 @import "tailwindcss";
 
-/* Brand tokens: deep teal (trust) + turmeric (warmth, festival). */
+/* Brand tokens: blue (trust) + orange (warmth, festival).
+   brand-600/700 and accent-500/600 keep white text at 4.5:1 or better. */
 @theme {
   --font-sans: var(--font-inter), var(--font-telugu), ui-sans-serif, system-ui, sans-serif;
   --font-telugu-stack: var(--font-telugu), var(--font-inter), sans-serif;
 
-  --color-brand-50: #eefaf8;
-  --color-brand-100: #d5f2ed;
-  --color-brand-200: #aee4da;
-  --color-brand-500: #14857a;
-  --color-brand-600: #0f6b63;
-  --color-brand-700: #0d5650;
-  --color-brand-900: #0a3532;
+  --color-brand-50: #eff5ff;
+  --color-brand-100: #dbe8fe;
+  --color-brand-200: #bfd6fd;
+  --color-brand-500: #2f6fe4;
+  --color-brand-600: #1d5bd0;
+  --color-brand-700: #1747a6;
+  --color-brand-900: #0f2a5e;
 
-  --color-accent-100: #fdf0d9;
-  --color-accent-400: #f2a93b;
-  --color-accent-500: #e08a12;
-  --color-accent-600: #b86d0b;
+  --color-accent-100: #ffeedd;
+  --color-accent-400: #fb9a4b;
+  --color-accent-500: #cc4f0b;
+  --color-accent-600: #a8400a;
 
-  --color-ink: #1c2321;
-  --color-muted: #5b6662;
-  --color-line: #e3e8e6;
+  --color-ink: #172033;
+  --color-muted: #586274;
+  --color-line: #e2e6ee;
   --color-surface: #ffffff;
-  --color-canvas: #f7f8f6;
+  --color-canvas: #f6f8fb;
 
   --radius-card: 1rem;
 }

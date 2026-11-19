@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: { type: "website", siteName: "Community Connect", locale: "en_US", alternateLocale: ["te_IN"] },
 };
 
-export const viewport: Viewport = { themeColor: "#0f6b63", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#1d5bd0", width: "device-width", initialScale: 1 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const [{ lang, t }, session] = await Promise.all([getDictionary(), getSession()]);
