@@ -16,7 +16,8 @@ type Turn = Message & { businesses?: Business[]; listings?: Listing[] };
 
 const MAX_MESSAGES = 28; // the API accepts 30; leave room for the next question
 // One conversation per browser tab, shared by the floating widget and the /ask page.
-export const ASK_STORAGE_KEY = "askcc:conversation";
+// Bump the version to drop saved conversations whose result cards point at old entries.
+export const ASK_STORAGE_KEY = "askcc:conversation:v2";
 
 function loadTurns(): Turn[] {
   try {
