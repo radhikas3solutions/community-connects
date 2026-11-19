@@ -20,9 +20,12 @@ export function Header({ t, lang, signedIn }: { t: Dictionary; lang: Language; s
           <Link href="/listings" className="rounded-full px-3 py-2 hover:bg-brand-50">
             {t.nav.browse}
           </Link>
-          <span className="cursor-default rounded-full px-3 py-2 text-muted" title={t.home.comingSoon}>
+          <Link href="/directory" className="rounded-full px-3 py-2 hover:bg-brand-50">
             {t.nav.directory}
-          </span>
+          </Link>
+          <Link href="/ask" className="rounded-full px-3 py-2 hover:bg-brand-50">
+            ✨ {t.nav.ask}
+          </Link>
           <span className="cursor-default rounded-full px-3 py-2 text-muted" title={t.home.comingSoon}>
             {t.nav.events}
           </span>

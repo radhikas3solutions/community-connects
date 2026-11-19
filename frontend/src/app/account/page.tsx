@@ -4,10 +4,11 @@ import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { getDictionary } from "@/i18n/server";
-import { getMe, getMyListings } from "@/lib/api";
+import { getMe, getMyEntries, getMyListings } from "@/lib/api";
+import { businessName } from "@/lib/directory";
 import { formatPrice, localized } from "@/lib/format";
 import { getSession } from "@/lib/supabase/server";
-import type { Listing, Profile } from "@/lib/types";
+import type { Business, Listing, Profile } from "@/lib/types";
 
 export const metadata: Metadata = { title: "My account" };
 
@@ -23,9 +24,13 @@ export default async function AccountPage() {
   } catch (err) {
     console.error("[account] /me failed", err);
   }
-  const listings: Listing[] | null = profile
-    ? await getMyListings(session.accessToken).catch(() => null)
-    : null;
+  const [listings, entries]: [Listing[] | null, Business[] | null] = profile
+    ? await Promise.all([
+        getMyListings(session.accessToken).catch(() => null),
+        getMyEntries(session.accessToken).catch(() => null),
+      ])
+    : [null, null];
+  const isStaff = profile?.role === "moderator" || profile?.role === "admin";
 
   return (
     <Container className="max-w-2xl py-10">
@@ -80,6 +85,56 @@ export default async function AccountPage() {
                   </Link>
                   <span className="hidden text-sm text-muted sm:inline">{formatPrice(l, lang)}</span>
                   <Link href={`/listings/${l.id}/edit`} className="text-sm font-semibold text-brand-700 hover:underline">
+                    {t.myListings.edit}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {entries && (
+        <section className="mt-10">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-2xl font-bold">{t.myEntries.title}</h2>
+            <div className="flex gap-4 text-sm font-semibold">
+              {isStaff && (
+                <Link href="/admin/directory" className="text-accent-600 hover:underline">
+                  🛡️ {t.myEntries.reviewQueue}
+                </Link>
+              )}
+              {isStaff && (
+                <Link href="/admin/directory/import" className="text-accent-600 hover:underline">
+                  📋 {t.npiImport.link}
+                </Link>
+              )}
+              <Link href="/directory/new" className="text-brand-700 hover:underline">
+                ➕ {t.directory.add}
+              </Link>
+            </div>
+          </div>
+          {entries.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-line p-6 text-center text-muted">{t.myEntries.empty}</p>
+          ) : (
+            <ul className="divide-y divide-line rounded-[var(--radius-card)] border border-line bg-surface">
+              {entries.map((b) => (
+                <li key={b.id} className="flex items-center gap-3 p-3">
+                  <span
+                    className={`w-24 shrink-0 rounded-full px-2 py-0.5 text-center text-xs font-semibold ${
+                      b.status === "active"
+                        ? "bg-brand-100 text-brand-700"
+                        : b.status === "rejected"
+                          ? "bg-accent-100 text-accent-600"
+                          : "bg-canvas text-muted"
+                    }`}
+                  >
+                    {t.myEntries.status[b.status]}
+                  </span>
+                  <Link href={`/directory/${b.id}`} className="min-w-0 flex-1 truncate font-medium hover:underline">
+                    {b.category?.icon} {businessName(b, lang)}
+                  </Link>
+                  <Link href={`/directory/${b.id}/edit`} className="text-sm font-semibold text-brand-700 hover:underline">
                     {t.myListings.edit}
                   </Link>
                 </li>

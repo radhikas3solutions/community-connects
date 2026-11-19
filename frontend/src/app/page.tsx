@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { ListingCard } from "@/components/ListingCard";
-import { ButtonLink } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { getDictionary } from "@/i18n/server";
 import { getCategories, searchListings } from "@/lib/api";
@@ -21,7 +21,7 @@ export default async function HomePage() {
   const quick = [
     { href: "/listings?listing_type=free", label: t.home.quick.free, icon: "🎁", live: true },
     { href: "/listings?listing_type=buy", label: t.home.quick.wanted, icon: "🔎", live: true },
-    { href: null, label: t.home.quick.directory, icon: "🏪", live: false },
+    { href: "/directory", label: t.home.quick.directory, icon: "🏪", live: true },
     { href: null, label: t.home.quick.events, icon: "🎬", live: false },
   ];
 
@@ -37,6 +37,23 @@ export default async function HomePage() {
             <p className="mt-4 max-w-xl text-lg text-muted" lang={lang}>
               {t.home.heroBody}
             </p>
+            <form action="/ask" role="search" className="mt-6 flex max-w-xl gap-2">
+              <label htmlFor="home-ask" className="sr-only">
+                {t.home.askPlaceholder}
+              </label>
+              <input
+                id="home-ask"
+                name="q"
+                required
+                maxLength={1000}
+                placeholder={t.home.askPlaceholder}
+                className="h-12 min-w-0 flex-1 rounded-full border border-line bg-surface px-5 shadow-sm"
+                lang={lang}
+              />
+              <Button type="submit" size="lg">
+                ✨ {t.nav.ask}
+              </Button>
+            </form>
             <div className="mt-6 flex flex-wrap gap-3">
               <ButtonLink href="/sell" variant="accent" size="lg">
                 📸 {t.home.ctaSell}
@@ -107,8 +124,8 @@ export default async function HomePage() {
           </Section>
         )}
         {business.length > 0 && (
-          <Section title={t.home.directory} badge={t.home.comingSoon}>
-            <CategoryGrid categories={business} lang={lang} hrefFor={() => null} />
+          <Section title={t.home.directory} action={{ href: "/directory", label: t.home.seeAll }}>
+            <CategoryGrid categories={business} lang={lang} hrefFor={(c) => `/directory?category=${c.slug}`} />
           </Section>
         )}
       </Container>

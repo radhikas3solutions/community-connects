@@ -1,6 +1,7 @@
 import { SITE_URL } from "@/lib/env";
 import { formatPrice, localized } from "@/lib/format";
-import type { Language, Listing } from "@/lib/types";
+import { businessName } from "@/lib/directory";
+import type { Business, Language, Listing } from "@/lib/types";
 
 const typeEmoji: Record<Listing["listing_type"], string> = { free: "🆓", sell: "🏷️", buy: "🔎" };
 
@@ -22,4 +23,13 @@ export function listingShareText(listing: Listing, lang: Language) {
   const title = localized(listing.title_en, listing.title_te, lang);
   const details = [formatPrice(listing, lang), listing.city].filter(Boolean).join(" · ");
   return `${typeEmoji[listing.listing_type]} ${title}\n${details}\n${listingShareUrl(listing.id, lang)}`;
+}
+
+export const businessShareUrl = (id: string, lang: Language) => `${SITE_URL}/directory/${id}?lang=${lang}`;
+
+/** e.g. "🍽️ Godavari Kitchen\nRestaurants · Ashburn\nhttps://…" */
+export function businessShareText(b: Business, lang: Language) {
+  const category = b.category ? (lang === "te" ? b.category.name_te : b.category.name_en) : null;
+  const details = [category, b.city].filter(Boolean).join(" · ");
+  return `${b.category?.icon ?? "📍"} ${businessName(b, lang)}\n${details}\n${businessShareUrl(b.id, lang)}`;
 }

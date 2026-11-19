@@ -11,7 +11,11 @@ from app.core.security import AuthError, AuthUser, decode_supabase_token
 from app.db.session import get_db
 from app.models import Profile
 from app.models.enums import UserRole
+from app.services.ai_intake import ClaudeIntakeAssistant, IntakeAssistant
 from app.services.ai_listing import ClaudeListingDrafter, ListingDrafter
+from app.services.ai_menu import ClaudeMenuReader, MenuReader
+from app.services.ai_search import ClaudeSearchAgent, SearchAgent
+from app.services.npi import HttpNpiClient, NpiClient
 from app.services.storage import PhotoStorage, SupabaseStorage
 
 bearer = HTTPBearer(auto_error=False)
@@ -124,3 +128,54 @@ def get_drafter(settings: Settings = Depends(get_settings)) -> ListingDrafter:
             detail={"code": "ai_unavailable", "message": "AI drafting is not configured"},
         )
     return _claude_drafter()
+
+
+@lru_cache
+def _claude_menu_reader() -> ClaudeMenuReader:
+    return ClaudeMenuReader(get_settings())
+
+
+def get_menu_reader(settings: Settings = Depends(get_settings)) -> MenuReader:
+    if not settings.anthropic_api_key:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"code": "ai_unavailable", "message": "AI menu reading is not configured"},
+        )
+    return _claude_menu_reader()
+
+
+@lru_cache
+def _claude_intake_assistant() -> ClaudeIntakeAssistant:
+    return ClaudeIntakeAssistant(get_settings())
+
+
+def get_intake_assistant(settings: Settings = Depends(get_settings)) -> IntakeAssistant:
+    if not settings.anthropic_api_key:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"code": "ai_unavailable", "message": "The assistant is not configured"},
+        )
+    return _claude_intake_assistant()
+
+
+@lru_cache
+def _claude_search_agent() -> ClaudeSearchAgent:
+    return ClaudeSearchAgent(get_settings())
+
+
+def get_search_agent(settings: Settings = Depends(get_settings)) -> SearchAgent:
+    if not settings.anthropic_api_key:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"code": "ai_unavailable", "message": "The assistant is not configured"},
+        )
+    return _claude_search_agent()
+
+
+@lru_cache
+def _http_npi_client() -> HttpNpiClient:
+    return HttpNpiClient()
+
+
+def get_npi_client() -> NpiClient:
+    return _http_npi_client()

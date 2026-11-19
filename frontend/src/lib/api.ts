@@ -1,7 +1,7 @@
 import "server-only";
 
 import { SERVER_API_URL } from "@/lib/env";
-import type { Category, CategoryKind, Listing, Page, Profile } from "@/lib/types";
+import type { Business, Category, CategoryKind, Listing, Page, Profile } from "@/lib/types";
 
 export class ApiError extends Error {
   constructor(
@@ -77,3 +77,31 @@ export async function getListing(id: string, token?: string): Promise<Listing | 
 }
 
 export const getMyListings = (token: string) => apiFetch<Listing[]>("/api/v1/listings/mine", { token });
+
+// ---------------------------------------------------------------- directory
+
+/** Directory search. With a token, individuals' contact details are included. */
+export const searchDirectory = (params: Record<string, string | undefined>, token?: string) => {
+  const qs = new URLSearchParams(
+    Object.entries(params).filter((e): e is [string, string] => Boolean(e[1])),
+  );
+  return safe(
+    apiFetch<Page<Business>>(`/api/v1/businesses?${qs}`, { token, revalidate: 60 }),
+    { items: [], total: 0, limit: 24, offset: 0 } as Page<Business>,
+  );
+};
+
+/** One entry; `null` when it doesn't exist or isn't visible to this viewer. Throws when the API is down. */
+export async function getBusiness(id: string, token?: string): Promise<Business | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+  try {
+    return await apiFetch<Business>(`/api/v1/businesses/${id}`, { token, revalidate: 60 });
+  } catch (err) {
+    if (err instanceof ApiError && (err.status === 404 || err.status === 422)) return null;
+    throw err;
+  }
+}
+
+export const getMyEntries = (token: string) => apiFetch<Business[]>("/api/v1/businesses/mine", { token });
+export const getReviewQueue = (token: string) =>
+  apiFetch<Business[]>("/api/v1/businesses/review-queue", { token });

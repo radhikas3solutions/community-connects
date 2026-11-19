@@ -30,6 +30,9 @@ class AIUsage(Base):
     listing_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("listings.id", ondelete="SET NULL")
     )
+    business_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("businesses.id", ondelete="SET NULL")
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

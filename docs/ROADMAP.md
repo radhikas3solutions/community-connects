@@ -4,7 +4,7 @@
 |---|-------|--------|
 | 1 | Foundation: repository, auth, database, UI shell | ✅ Done |
 | 2 | AI listings: photo upload → English/Telugu listing | ✅ Done |
-| 3 | Business & professional directory | ⏳ Next |
+| 3 | Business & professional directory | 🚧 In progress |
 | 4 | Community content: deals, jobs, movies, events | |
 | 5 | Sharing & engagement: WhatsApp / Facebook / Instagram | |
 | 6 | Trust & safety: moderation and admin dashboard | |
@@ -40,9 +40,40 @@
 - Per-user AI quotas (hourly + daily, slot reserved before the call) and `ai_usage`
   cost/latency logging
 
-## Phase 3: Directory
-- `businesses` table (owner, hours, languages spoken, service area polygon, verified flag),
-  claim-your-business flow, reviews/ratings, directory search with map
+## Phase 3: Directory 🚧
+Done:
+- `businesses` + `menu_items` tables; businesses and individuals (helpers, tutors, tailors);
+  new categories: plumbers & electricians, tailors, nannies/cooks/helpers
+- Member submissions go to a moderator review queue (`/admin/directory`); staff entries go
+  live at once; reject with a note, editing a rejected entry resubmits it; verified badge
+- Privacy: no home address for individuals, and their phone/WhatsApp/email only for
+  signed-in members; consent checkbox when adding someone else
+- Directory search (name/description full-text, Telugu name trigram, category, language
+  spoken, city/service area); entry pages with Call / WhatsApp / Directions / Share
+- Restaurant menus: photos -> Claude (streamed structured output) -> editable dish list
+  (EN + Telugu names, prices, veg/non-veg) -> saved; AI quota shared with listing drafts
+- "Add with our assistant" chat (`/directory/assistant`, `POST /assistant/directory-intake`):
+  people describe their business or service in English or Telugu; each turn returns a reply
+  plus a validated draft shown as a live preview; the person ticks consent and submits it
+  to the normal review queue (the AI never saves anything). ~1-3¢ per turn, own rate limit
+- "Ask" search assistant (`/ask`, `POST /assistant/ask`, also the search box on the home page):
+  questions like "dentist in Aldie" in English or Telugu; Claude calls read-only
+  `search_directory` / `search_marketplace` tools, widens to neighboring towns when a town
+  has no matches, and answers with a short reply plus result cards (call / WhatsApp). Cards
+  are limited to entries the tools actually returned. ~2-3¢ per question, 4-12 s
+- NPI Registry import (`/admin/directory/import`, `POST /admin/import/npi`, staff only):
+  dentists, pediatricians, family/internal medicine, OB/GYN and optometrists per ZIP from the
+  public CMS registry. Practice LOCATION address only (mailing addresses are often homes),
+  must be in the ZIP; providers sharing a practice phone become one entry listing them;
+  live but unverified with a "Public record" label; re-import updates (keyed on ZIP + phone)
+  and never revives removed/rejected entries; skips phones a member already listed.
+  First run: 12 Loudoun/western Fairfax ZIPs -> 484 practices
+
+Still to do:
+- Re-run the NPI import every few months (a scheduled job); chains with one central phone
+  number currently collapse to their first ZIP
+- Claim-your-business flow, reviews/ratings, map view (needs geocoding), photos/logos,
+  opening-hours structure, duplicate detection
 
 ## Phase 4: Community content
 - `deals`, `jobs`, `events`, `movies` (showtimes at local theatres) with expiry, RSVP,

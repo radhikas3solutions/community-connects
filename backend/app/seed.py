@@ -43,6 +43,9 @@ CATEGORIES: list[tuple[str, CategoryKind, str, str, str, bool]] = [
     ("priests-pooja", B, "Priests & Pooja Services", "పురోహితులు & పూజా సేవలు", "🕉️", True),
     ("temples", B, "Temples", "దేవాలయాలు", "🛕", True),
     ("home-services", B, "Home Services", "ఇంటి సేవలు", "🔧", False),
+    ("plumbers-electricians", B, "Plumbers & Electricians", "ప్లంబర్లు & ఎలక్ట్రీషియన్లు", "🪠", False),
+    ("tailors", B, "Tailors & Alterations", "దర్జీలు & ఆల్టరేషన్లు", "🧵", True),
+    ("helpers", B, "Nannies, Cooks & Helpers", "ఆయాలు, వంటవాళ్ళు & సహాయకులు", "🤝", True),
     # --- Community (content types arrive in Phase 4) ---
     ("deals", C, "Deals", "ఆఫర్లు", "🏷️", False),
     ("jobs", C, "Jobs", "ఉద్యోగాలు", "💼", False),

@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     # Per-user limits on AI draft requests (successful or not), to cap cost and abuse.
     ai_drafts_per_hour: int = 10
     ai_drafts_per_day: int = 30
+    # Chat turns with the "add your business" assistant (each message is one AI call).
+    ai_chat_turns_per_hour: int = 60
+    ai_chat_turns_per_day: int = 200
 
     @property
     def cors_origin_list(self) -> list[str]:

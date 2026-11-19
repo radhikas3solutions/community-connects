@@ -87,6 +87,6 @@ def db_client(migrated_db: None) -> Iterator[TestClient]:
     from app.db.session import get_engine
 
     with get_engine().begin() as conn:
-        conn.execute(text("TRUNCATE listings, profiles CASCADE"))
+        conn.execute(text("TRUNCATE listings, businesses, profiles CASCADE"))
     with TestClient(create_app()) as c:
         yield c

@@ -38,33 +38,38 @@ PROBLEM_MESSAGES = {
 }
 
 
-def _error(
+def ai_error(
     code: int, key: str, message: str, headers: dict[str, str] | None = None
 ) -> HTTPException:
     return HTTPException(code, detail={"code": key, "message": message}, headers=headers)
 
 
-def _check_rate_limit(db: Session, profile: Profile, settings: Settings) -> None:
+def check_ai_rate_limit(
+    db: Session,
+    profile: Profile,
+    settings: Settings,
+    feature: str = FEATURE,
+    limits: tuple[int, int] | None = None,
+) -> None:
+    """Per-user (hourly, daily) cap on AI calls for one feature; defaults to the draft limits."""
+    per_hour, per_day = limits or (settings.ai_drafts_per_hour, settings.ai_drafts_per_day)
     now = datetime.now(UTC)
-    windows = (
-        (timedelta(hours=1), settings.ai_drafts_per_hour),
-        (timedelta(days=1), settings.ai_drafts_per_day),
-    )
+    windows = ((timedelta(hours=1), per_hour), (timedelta(days=1), per_day))
     for window, limit in windows:
         used = db.scalar(
             select(func.count())
             .select_from(AIUsage)
             .where(
                 AIUsage.profile_id == profile.id,
-                AIUsage.feature == FEATURE,
+                AIUsage.feature == feature,
                 AIUsage.created_at > now - window,
             )
         )
         if (used or 0) >= limit:
-            raise _error(
+            raise ai_error(
                 status.HTTP_429_TOO_MANY_REQUESTS,
                 "rate_limited",
-                "You've reached the limit for AI drafts. Please try again later.",
+                "You've reached the limit for AI requests. Please try again later.",
                 headers={"Retry-After": str(int(window.total_seconds()))},
             )
 
@@ -176,13 +181,13 @@ def draft_listing(
     """Creates a listing in `draft` status. The seller edits it, then publishes it with
     `PATCH /listings/{id}` and `{"status": "active"}`."""
     if listing_type == ListingType.BUY:
-        raise _error(
+        raise ai_error(
             status.HTTP_422_UNPROCESSABLE_CONTENT,
             "unsupported_type",
             "AI drafts are for items you're selling or giving away",
         )
     processed = read_photos(photos, settings, max_count=settings.max_photos_per_listing)
-    _check_rate_limit(db, profile, settings)
+    check_ai_rate_limit(db, profile, settings)
 
     # Reserve the slot before calling Claude so parallel requests can't exceed the limit.
     usage = AIUsage(profile_id=profile.id, feature=FEATURE, outcome="pending")
@@ -207,16 +212,16 @@ def draft_listing(
         _record(usage, exc.outcome, exc.result)
         db.commit()
         if exc.outcome == "refused":
-            raise _error(
+            raise ai_error(
                 status.HTTP_422_UNPROCESSABLE_CONTENT, "prohibited", PROBLEM_MESSAGES["prohibited"]
             ) from exc
-        raise _error(status.HTTP_502_BAD_GATEWAY, "ai_error", str(exc)) from exc
+        raise ai_error(status.HTTP_502_BAD_GATEWAY, "ai_error", str(exc)) from exc
 
     draft = result.draft
     if draft.problem != "none":
         _record(usage, "rejected", result)
         db.commit()
-        raise _error(
+        raise ai_error(
             status.HTTP_422_UNPROCESSABLE_CONTENT,
             draft.problem,
             PROBLEM_MESSAGES.get(draft.problem, PROBLEM_MESSAGES["unclear_photo"]),

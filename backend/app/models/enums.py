@@ -54,3 +54,16 @@ def str_enum(enum_cls: type[StrEnum], name: str) -> SAEnum:
         values_callable=lambda e: [m.value for m in e],
         validate_strings=True,
     )
+
+
+class EntryKind(StrEnum):
+    BUSINESS = "business"  # a shop, clinic, restaurant, firm: public address and phone
+    # A helper, tutor or tailor working from home: contact details shown to members only.
+    INDIVIDUAL = "individual"
+
+
+class DirectoryStatus(StrEnum):
+    PENDING_REVIEW = "pending_review"  # submitted, waiting for a moderator
+    ACTIVE = "active"
+    REJECTED = "rejected"
+    REMOVED = "removed"

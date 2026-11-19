@@ -75,3 +75,46 @@ export interface Page<T> {
 
 /** Error body from the API: `detail` is a string, or `{code, message}` on photo/AI routes. */
 export type ApiErrorDetail = string | { code: string; message: string };
+
+export type EntryKind = "business" | "individual";
+export type DirectoryStatus = "pending_review" | "active" | "rejected" | "removed";
+
+export interface MenuItem {
+  id: string | null;
+  section: string | null;
+  name: string;
+  name_te: string | null;
+  description: string | null;
+  price_cents: number | null;
+  is_vegetarian: boolean | null;
+}
+
+export interface Business {
+  id: string;
+  kind: EntryKind;
+  status: DirectoryStatus;
+  name: string;
+  name_te: string | null;
+  description_en: string | null;
+  description_te: string | null;
+  phone: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  website: string | null;
+  address: string | null;
+  city: string | null;
+  zip_code: string | null;
+  service_area: string | null;
+  hours: string | null;
+  languages: string[];
+  is_verified: boolean;
+  source: string | null; // "npi" = imported from the public NPI Registry
+  category: Category | null;
+  menu: MenuItem[];
+  /** An individual's phone/email withheld from a signed-out visitor. */
+  contact_hidden: boolean;
+  can_edit: boolean;
+  review_note: string | null;
+  created_at: string;
+  updated_at: string;
+}

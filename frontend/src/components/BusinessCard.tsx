@@ -1,0 +1,51 @@
+import Link from "next/link";
+import type { Dictionary } from "@/i18n/dictionaries";
+import { businessName } from "@/lib/directory";
+import type { Business, Language } from "@/lib/types";
+
+export function BusinessCard({ business: b, lang, t }: { business: Business; lang: Language; t: Dictionary }) {
+  const category = b.category ? (lang === "te" ? b.category.name_te : b.category.name_en) : null;
+  const where = b.kind === "individual" ? b.service_area || b.city : b.city;
+  const langs = b.languages
+    .slice(0, 3)
+    .map((code) => t.directory.languageNames[code] ?? code)
+    .join(", ");
+
+  return (
+    <article className="relative flex h-full gap-3 rounded-[var(--radius-card)] border border-line bg-surface p-4 transition-shadow focus-within:shadow-md hover:shadow-md">
+      <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-50 text-2xl">
+        {b.category?.icon ?? "📍"}
+      </span>
+      <div className="min-w-0 flex-1 space-y-1">
+        <h3 className="font-semibold" lang={lang === "te" && b.name_te ? "te" : undefined}>
+          {/* Stretched link: the whole card is clickable, but only the name is announced. */}
+          <Link href={`/directory/${b.id}`} className="after:absolute after:inset-0">
+            {businessName(b, lang)}
+          </Link>
+          {b.is_verified && (
+            <span className="ml-2 align-middle text-xs font-semibold text-brand-700" title={t.directory.verified}>
+              ✓ {t.directory.verified}
+            </span>
+          )}
+          {b.source === "npi" && (
+            <span className="ml-2 align-middle text-xs font-semibold text-muted" lang={lang}>
+              📋 {t.directory.publicRecord}
+            </span>
+          )}
+        </h3>
+        {category && (
+          <p className="text-sm text-muted" lang={lang}>
+            {category}
+            {b.kind === "individual" && ` · ${t.directory.individual}`}
+          </p>
+        )}
+        {where && <p className="truncate text-sm">📍 {where}</p>}
+        {langs && (
+          <p className="truncate text-xs text-muted" lang={lang}>
+            🗣️ {langs}
+          </p>
+        )}
+      </div>
+    </article>
+  );
+}
