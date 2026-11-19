@@ -21,6 +21,7 @@ from app.db.session import get_db
 from app.models import AIUsage, Business, Category, MenuItem, Profile
 from app.models.enums import CategoryKind, DirectoryStatus, EntryKind, UserRole
 from app.schemas.business import (
+    CALLABLE_PHONE,
     LANGUAGE_CODES,
     MAX_MENU_ITEMS,
     MAX_MENU_PRICE_CENTS,
@@ -109,7 +110,13 @@ def directory_query(
 ) -> tuple[list[Business], int]:
     """Active entries matching the filters. `towns` matches an entry's city or service area
     (any of them). Shared by the search endpoint and the search assistant."""
-    stmt = select(Business).where(Business.status == DirectoryStatus.ACTIVE)
+    stmt = select(Business).where(
+        Business.status == DirectoryStatus.ACTIVE,
+        # Only entries people can call (imports without a usable number stay hidden).
+        func.regexp_replace(func.coalesce(Business.phone, ""), r"\D", "", "g").op("~")(
+            CALLABLE_PHONE
+        ),
+    )
     if category:
         stmt = stmt.join(Category, Business.category_id == Category.id).where(
             Category.slug == category

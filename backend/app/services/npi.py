@@ -13,6 +13,8 @@ from typing import Any, Protocol
 
 import httpx2
 
+from app.schemas.business import is_callable_phone
+
 log = logging.getLogger(__name__)
 
 NPI_API = "https://npiregistry.cms.hhs.gov/api/"
@@ -202,8 +204,8 @@ def practices_from_results(
         if not specialties or loc is None:
             continue
         zip5 = (loc.get("postal_code") or "")[:5]
-        phone = _digits(loc.get("telephone_number"))
-        if zip5 != postal_code or loc.get("state") != "VA" or len(phone) != 10:
+        phone = _digits(loc.get("telephone_number"))[-10:]
+        if zip5 != postal_code or loc.get("state") != "VA" or not is_callable_phone(phone):
             continue
 
         is_org = record.get("enumeration_type") == "NPI-2"

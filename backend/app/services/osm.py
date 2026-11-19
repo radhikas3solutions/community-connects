@@ -4,9 +4,9 @@ OpenStreetMap data is open (ODbL): we may reuse it with attribution ("© OpenStr
 contributors", linked from every imported entry). Google Maps and Yelp forbid copying
 their listings, so they are not used.
 
-One request = one area. Places without a name, and places inside the Dulles airport
-terminals (not reachable for the public without a ticket), are skipped. A missing town
-is filled in from the nearest known town centre.
+One request = one area. Places without a name or a callable phone number, and places
+inside the Dulles airport terminals (not reachable for the public without a ticket), are
+skipped. A missing town is filled in from the nearest known town centre.
 """
 
 import logging
@@ -17,6 +17,8 @@ from dataclasses import dataclass, field
 from typing import Any, Protocol
 
 import httpx2
+
+from app.schemas.business import is_callable_phone
 
 log = logging.getLogger(__name__)
 
@@ -236,6 +238,9 @@ def places_from_elements(elements: list[dict[str, Any]]) -> list[Place]:
             continue
         if _in_box(lat, lon, AIRPORT_BOX):
             continue
+        phone = _phone(tags.get("phone") or tags.get("contact:phone"))
+        if not is_callable_phone(phone):
+            continue  # only places people can call are listed
         key = f"{el.get('type')}/{el.get('id')}"
         if key in seen:
             continue
@@ -252,7 +257,7 @@ def places_from_elements(elements: list[dict[str, Any]]) -> list[Place]:
                 key=key,
                 name=name[:120],
                 amenity=tags["amenity"],
-                phone=_phone(tags.get("phone") or tags.get("contact:phone")),
+                phone=phone,
                 website=_website(tags.get("website") or tags.get("contact:website")),
                 address=street[:200] or None,
                 city=KNOWN_CITIES.get((tags.get("addr:city") or "").strip().lower())

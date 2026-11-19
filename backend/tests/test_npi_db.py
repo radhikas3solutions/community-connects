@@ -179,8 +179,8 @@ def test_grouping_and_filtering() -> None:
 
 
 def test_only_physicians_match_a_physician_specialty() -> None:
-    loc = _address("LOCATION", "1 MAIN ST", "ASHBURN", "20147", "703-111-2222")
-    loc2 = _address("LOCATION", "2 MAIN ST", "ASHBURN", "20147", "703-111-3333")
+    loc = _address("LOCATION", "1 MAIN ST", "ASHBURN", "20147", "703-421-2222")
+    loc2 = _address("LOCATION", "2 MAIN ST", "ASHBURN", "20147", "703-421-3333")
     records = [
         _person("1", "ANN", "LEE", "MD", loc, taxes=("Pediatrics, Neonatal-Perinatal Medicine",)),
         _person("2", "BO", "KIM", "CPNP", loc2, taxes=("Nurse Practitioner, Pediatrics",)),

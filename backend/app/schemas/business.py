@@ -14,6 +14,13 @@ MAX_MENU_ITEMS = 300
 MAX_MENU_PRICE_CENTS = 1_000_000  # $10,000 sanity cap per dish
 
 _PHONE_ALLOWED = re.compile(r"^[0-9+()\-.\s]{7,32}$")
+# A US/Canada number people can call: 10 digits (optional leading 1), area code and exchange
+# not starting with 0 or 1. Rules out blanks, "000-000-0000" and registry filler.
+CALLABLE_PHONE = r"^1?[2-9][0-9]{2}[2-9][0-9]{6}$"
+
+
+def is_callable_phone(value: str | None) -> bool:
+    return bool(re.match(CALLABLE_PHONE, re.sub(r"\D", "", value or "")))
 
 
 def _normalize_phone(value: str | None) -> str | None:
@@ -68,10 +75,18 @@ class BusinessBase(BaseModel):
     def _strip(cls, v: object) -> object:
         return _clean(v) if isinstance(v, str) else v
 
-    @field_validator("phone", "whatsapp")
+    @field_validator("phone")
     @classmethod
     def _phone(cls, v: str | None) -> str | None:
-        return _normalize_phone(v)
+        v = _normalize_phone(v)
+        if v is not None and not is_callable_phone(v):
+            raise ValueError("Enter a 10-digit US phone number, like 703-555-0123")
+        return v
+
+    @field_validator("whatsapp")
+    @classmethod
+    def _whatsapp(cls, v: str | None) -> str | None:
+        return _normalize_phone(v)  # may be an international number
 
     @field_validator("website")
     @classmethod
@@ -107,8 +122,9 @@ class BusinessCreate(BusinessBase):
 
     @model_validator(mode="after")
     def _check(self) -> "BusinessCreate":
-        if not (self.phone or self.whatsapp or self.email or self.website):
-            raise ValueError("Add at least one way to contact them")
+        # Only entries people can call are listed, so a phone number is required.
+        if not self.phone:
+            raise ValueError("Add a phone number customers can call")
         if self.kind == EntryKind.INDIVIDUAL:
             if not self.consent_confirmed:
                 raise ValueError("Confirm this person agreed to be listed")
@@ -117,7 +133,11 @@ class BusinessCreate(BusinessBase):
 
 
 class BusinessUpdate(BusinessBase):
-    pass
+    @model_validator(mode="after")
+    def _keep_phone(self) -> "BusinessUpdate":
+        if "phone" in self.model_fields_set and not self.phone:
+            raise ValueError("Add a phone number customers can call")
+        return self
 
 
 class BusinessReview(BaseModel):

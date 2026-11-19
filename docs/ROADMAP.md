@@ -85,6 +85,10 @@ Done:
   towns get the nearest town centre; places mapped twice or already listed are skipped.
   First run: Loudoun + Herndon/Chantilly/Centreville -> 1,176 places (39 Indian)
 
+- Only callable entries are listed: search and Ask CC show entries with a valid 10-digit US
+  number (area code/exchange not starting with 0/1); the add/edit form and assistant require
+  one; imports skip places without one (OSM 1,176 -> 709 restaurants; NPI drops registry filler)
+
 Still to do:
 - Re-run the NPI import every few months (a scheduled job); chains with one central phone
   number currently collapse to their first ZIP

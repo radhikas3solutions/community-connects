@@ -36,7 +36,17 @@ type TextField = (typeof TEXT_FIELDS)[number];
 const input = "w-full rounded-xl border border-line bg-surface px-3 py-2";
 const orNull = (s: string) => s.trim() || null;
 
-function Field({ label, htmlFor, hint, children }: { label: string; htmlFor: string; hint?: string; children: ReactNode }) {
+function Field({
+  label,
+  htmlFor,
+  hint,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  hint?: string;
+  children: ReactNode;
+}) {
   return (
     <div>
       <label htmlFor={htmlFor} className="mb-1 block text-sm font-medium">
@@ -71,7 +81,8 @@ export function BusinessForm({ business, categories, lang, t, languageNames }: P
     e.preventDefault();
     setMessage(null);
     if (!categoryId) return setMessage({ kind: "error", text: t.needCategory });
-    if (!(f.phone.trim() || f.whatsapp.trim() || f.email.trim() || f.website.trim())) {
+    // Same rule as the API: a callable US number (area code and exchange don't start with 0/1).
+    if (!/^1?[2-9]\d{2}[2-9]\d{6}$/.test(f.phone.replace(/\D/g, ""))) {
       return setMessage({ kind: "error", text: t.needContact });
     }
     if (!editing && isIndividual && !consent) return setMessage({ kind: "error", text: t.needConsent });
@@ -131,7 +142,14 @@ export function BusinessForm({ business, categories, lang, t, languageNames }: P
                   kind === k ? "border-brand-600 bg-brand-50" : "border-line bg-surface"
                 }`}
               >
-                <input type="radio" name="kind" value={k} checked={kind === k} onChange={() => setKind(k)} className="mt-1" />
+                <input
+                  type="radio"
+                  name="kind"
+                  value={k}
+                  checked={kind === k}
+                  onChange={() => setKind(k)}
+                  className="mt-1"
+                />
                 {k === "business" ? t.kindBusiness : t.kindIndividual}
               </label>
             ))}
@@ -158,7 +176,15 @@ export function BusinessForm({ business, categories, lang, t, languageNames }: P
         </Field>
         <div />
         <Field label={t.name} htmlFor="name">
-          <input id="name" value={f.name} onChange={set("name")} required minLength={2} maxLength={120} className={input} />
+          <input
+            id="name"
+            value={f.name}
+            onChange={set("name")}
+            required
+            minLength={2}
+            maxLength={120}
+            className={input}
+          />
         </Field>
         <Field label={t.nameTe} htmlFor="name_te">
           <input id="name_te" value={f.name_te} onChange={set("name_te")} maxLength={240} className={input} lang="te" />
@@ -190,10 +216,26 @@ export function BusinessForm({ business, categories, lang, t, languageNames }: P
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={t.phone} htmlFor="phone">
-          <input id="phone" type="tel" value={f.phone} onChange={set("phone")} className={input} autoComplete="off" />
+          <input
+            id="phone"
+            type="tel"
+            required
+            value={f.phone}
+            onChange={set("phone")}
+            className={input}
+            autoComplete="off"
+            placeholder="703-555-0123"
+          />
         </Field>
         <Field label={t.whatsapp} htmlFor="whatsapp">
-          <input id="whatsapp" type="tel" value={f.whatsapp} onChange={set("whatsapp")} className={input} autoComplete="off" />
+          <input
+            id="whatsapp"
+            type="tel"
+            value={f.whatsapp}
+            onChange={set("whatsapp")}
+            className={input}
+            autoComplete="off"
+          />
         </Field>
         <Field label={t.email} htmlFor="email">
           <input id="email" type="email" value={f.email} onChange={set("email")} className={input} autoComplete="off" />
@@ -220,7 +262,13 @@ export function BusinessForm({ business, categories, lang, t, languageNames }: P
           />
         </Field>
         <Field label={t.serviceArea} htmlFor="service_area" hint={t.serviceAreaHint}>
-          <input id="service_area" value={f.service_area} onChange={set("service_area")} maxLength={200} className={input} />
+          <input
+            id="service_area"
+            value={f.service_area}
+            onChange={set("service_area")}
+            maxLength={200}
+            className={input}
+          />
         </Field>
         <Field label={t.hours} htmlFor="hours" hint={t.hoursHint}>
           <input id="hours" value={f.hours} onChange={set("hours")} maxLength={200} className={input} />
@@ -254,7 +302,12 @@ export function BusinessForm({ business, categories, lang, t, languageNames }: P
           <p>🔒 {t.privacyNote}</p>
           {!editing && (
             <label className="flex items-start gap-2 font-medium">
-              <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1" />
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+                className="mt-1"
+              />
               {t.consent}
             </label>
           )}
@@ -275,7 +328,13 @@ export function BusinessForm({ business, categories, lang, t, languageNames }: P
           {busy === "save" ? t.saving : editing ? t.save : t.submit}
         </Button>
         {editing && (
-          <Button type="button" variant="ghost" onClick={remove} disabled={busy !== null} className="ml-auto text-red-700">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={remove}
+            disabled={busy !== null}
+            className="ml-auto text-red-700"
+          >
             {t.delete}
           </Button>
         )}

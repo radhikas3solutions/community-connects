@@ -217,6 +217,9 @@ const en = {
     publicRecord: "Public record",
     publicRecordNote:
       "Listed from the NPI Registry, the US government's public list of licensed healthcare providers. Hours, languages and other details aren't confirmed, so please call before visiting.",
+    goneTitle: "This entry isn't here any more",
+    goneText: "It may have been removed, or updated with a new link. Search the directory or ask Ask CC to find it again.",
+    goneSearch: "Search the directory",
     osmRecord: "From OpenStreetMap",
     osmRecordNote:
       "Listed from OpenStreetMap, a free map that anyone can edit. Hours and details may be out of date, so please call before visiting.",
@@ -269,7 +272,7 @@ const en = {
     nameTe: "Name in Telugu (optional)",
     descriptionEn: "About (English)",
     descriptionTe: "About (Telugu, optional)",
-    phone: "Phone",
+    phone: "Phone (required: only entries people can call are listed)",
     whatsapp: "WhatsApp number (only if customers may message you on WhatsApp; can be the same as your phone)",
     email: "Email",
     website: "Website",
@@ -284,7 +287,7 @@ const en = {
     consent: "This person agreed to be listed here with these contact details.",
     privacyNote:
       "For individuals we never show a home address, and their phone number is visible only to signed-in members.",
-    needContact: "Add at least one way to contact them.",
+    needContact: "Add a 10-digit US phone number customers can call, like 703-555-0123.",
     needConsent: "Please confirm they agreed to be listed.",
     needCategory: "Please choose a category.",
     submit: "Submit for review",
@@ -581,6 +584,9 @@ const te: Dictionary = {
     publicRecord: "ప్రభుత్వ రికార్డు",
     publicRecordNote:
       "లైసెన్స్ ఉన్న వైద్య సేవల ప్రదాతల అమెరికా ప్రభుత్వ పబ్లిక్ జాబితా (NPI Registry) నుండి తీసుకున్నది. సమయాలు, భాషలు, ఇతర వివరాలు ధృవీకరించలేదు, కాబట్టి వెళ్ళే ముందు ఫోన్ చేసి కనుక్కోండి.",
+    goneTitle: "ఈ ఎంట్రీ ఇప్పుడు లేదు",
+    goneText: "దీన్ని తీసేసి ఉండొచ్చు, లేదా కొత్త లింక్‌తో అప్‌డేట్ చేసి ఉండొచ్చు. మళ్ళీ కనుగొనడానికి డైరెక్టరీలో వెతకండి లేదా Ask CCని అడగండి.",
+    goneSearch: "డైరెక్టరీలో వెతకండి",
     osmRecord: "ఓపెన్‌స్ట్రీట్‌మ్యాప్ నుండి",
     osmRecordNote:
       "ఎవరైనా సరిదిద్దగల ఉచిత మ్యాప్ అయిన ఓపెన్‌స్ట్రీట్‌మ్యాప్ నుండి తీసుకున్నది. సమయాలు, వివరాలు పాతవై ఉండొచ్చు, కాబట్టి వెళ్ళే ముందు ఫోన్ చేసి కనుక్కోండి.",
@@ -633,7 +639,7 @@ const te: Dictionary = {
     nameTe: "తెలుగులో పేరు (ఐచ్ఛికం)",
     descriptionEn: "వివరాలు (ఇంగ్లీష్)",
     descriptionTe: "వివరాలు (తెలుగు, ఐచ్ఛికం)",
-    phone: "ఫోన్",
+    phone: "ఫోన్ (తప్పనిసరి: కాల్ చేయగలిగే ఎంట్రీలే చూపిస్తాం)",
     whatsapp: "వాట్సాప్ నంబర్ (కస్టమర్లు వాట్సాప్‌లో మెసేజ్ చేయొచ్చు అంటేనే; ఫోన్ నంబరే అయినా రాయండి)",
     email: "ఇమెయిల్",
     website: "వెబ్‌సైట్",
@@ -648,7 +654,7 @@ const te: Dictionary = {
     consent: "ఈ వివరాలతో ఇక్కడ జాబితాలో ఉండటానికి ఈ వ్యక్తి అంగీకరించారు.",
     privacyNote:
       "వ్యక్తుల ఇంటి చిరునామా మేము ఎప్పుడూ చూపించము, వారి ఫోన్ నంబర్ సైన్ ఇన్ చేసిన సభ్యులకు మాత్రమే కనిపిస్తుంది.",
-    needContact: "సంప్రదించడానికి కనీసం ఒక మార్గం చేర్చండి.",
+    needContact: "కస్టమర్లు కాల్ చేయగల 10 అంకెల US ఫోన్ నంబర్ చేర్చండి, ఉదా. 703-555-0123.",
     needConsent: "జాబితాలో ఉండటానికి వారు అంగీకరించారని నిర్ధారించండి.",
     needCategory: "దయచేసి ఒక వర్గం ఎంచుకోండి.",
     submit: "సమీక్షకు పంపండి",

@@ -56,15 +56,25 @@ ELEMENTS = [
             "addr:housenumber": "44050",
             "addr:street": "Ashburn Shopping Plaza",
             "addr:unit": "191",
+            "phone": "(703) 723-0040",
         },
     },  # fmt: skip
     # No town, misspelled town -> nearest town centre.
-    _node(3, 38.976, -77.640, amenity="cafe", name="Aldie Coffee"),
-    _node(4, 38.971, -77.387, amenity="fast_food", name="Chowrastha", **{"addr:city": "Herdon"}),
-    # No name; a bar; inside the Dulles terminals -> skipped.
+    _node(3, 38.976, -77.640, amenity="cafe", name="Aldie Coffee", phone="571-555-0101"),
+    _node(
+        4,
+        38.971,
+        -77.387,
+        amenity="fast_food",
+        name="Chowrastha",
+        **{"addr:city": "Herdon", "phone": "703-657-0216"},
+    ),  # fmt: skip
+    # No name; a bar; inside the Dulles terminals; no phone; a filler phone -> skipped.
     _node(5, 39.0, -77.5, amenity="restaurant"),
     _node(6, 39.0, -77.5, amenity="bar", name="A Bar"),
-    _node(7, 38.953, -77.448, amenity="fast_food", name="Airport Burger"),
+    _node(7, 38.953, -77.448, amenity="fast_food", name="Airport Burger", phone="703-572-0000"),
+    _node(8, 39.0, -77.5, amenity="cafe", name="No Phone Cafe"),
+    _node(9, 39.0, -77.5, amenity="cafe", name="Filler Cafe", phone="000-000-0000"),
 ]
 
 
@@ -167,3 +177,19 @@ def test_errors(osm: tuple[TestClient, FakeOsm]) -> None:
     fake.error = True
     r = client.post(URL, json={"area": "loudoun"}, headers=staff)
     assert r.status_code == 502 and r.json()["detail"]["code"] == "osm_unavailable"
+
+
+def test_search_lists_only_callable_entries(db_client: TestClient) -> None:
+    from app.models.enums import EntryKind
+
+    with get_sessionmaker()() as db:
+        for name, phone in (("Callable Cafe", "703-555-0142"), ("Silent Cafe", None),
+                            ("Filler Cafe", "000-000-0000")):  # fmt: skip
+            db.add(Business(kind=EntryKind.BUSINESS, status=DirectoryStatus.ACTIVE, name=name,
+                            phone=phone, languages=[]))  # fmt: skip
+        db.commit()
+    names = [
+        b["name"] for b in db_client.get("/api/v1/businesses", params={"q": "cafe"}).json()["items"]
+    ]
+    assert "Callable Cafe" in names
+    assert "Silent Cafe" not in names and "Filler Cafe" not in names

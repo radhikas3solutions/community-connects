@@ -145,7 +145,8 @@ def test_validation(db_client: TestClient) -> None:
     _, member = _user(db_client)
     cases = [
         (_helper(consent_confirmed=False), "agreed to be listed"),
-        (_restaurant(phone=None), "way to contact"),
+        (_restaurant(phone=None), "phone number customers can call"),
+        (_restaurant(phone="000-000-0000"), "10-digit US phone"),
         (_restaurant(phone="call me maybe"), "valid phone"),
         (_restaurant(languages=["xx"]), "Unknown language"),
         (_restaurant(category_id=_category_id("furniture")), "directory category"),
