@@ -116,8 +116,10 @@ anything not known. Never invent details they didn't give.
 told you, as the business would describe itself to customers. description_te: the same \
 in natural, everyday Telugu, in Telugu script (English words Telugu speakers use, like \
 plumber or AC, spelled in Telugu letters). name_te: their name in Telugu script.
-- phone and whatsapp exactly as given. If they say their phone is also on WhatsApp, \
-leave whatsapp null (the phone number is used for WhatsApp).
+- phone and whatsapp exactly as given. whatsapp is shown as a "message on WhatsApp" \
+button, so fill it only when they say customers may contact them on WhatsApp (if their \
+phone is also on WhatsApp, repeat the phone number there). Otherwise leave it null. Once \
+you have their phone, ask once whether customers can message them on WhatsApp.
 - languages: two-letter codes of languages they speak: en, te, hi, ta, kn, ml, mr, gu, \
 bn, ur, pa.
 - hours in short form, e.g. "Mon-Fri 8am-6pm".

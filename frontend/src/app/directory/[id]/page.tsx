@@ -124,9 +124,10 @@ export default async function BusinessPage({ params }: { params: Params }) {
             📞 {d.call}
           </a>
         )}
-        {(whatsapp || b.phone) && !b.contact_hidden && (
+        {/* Only when the business gave a WhatsApp number: a phone number alone is no consent to WhatsApp. */}
+        {whatsapp && !b.contact_hidden && (
           <a
-            href={whatsappChatHref(whatsapp ?? b.phone!)}
+            href={whatsappChatHref(whatsapp)}
             target="_blank"
             rel="noopener noreferrer"
             className={buttonClass("secondary")}

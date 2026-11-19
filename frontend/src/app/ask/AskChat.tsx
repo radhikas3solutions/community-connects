@@ -220,7 +220,7 @@ function Results({ title, lang, children }: { title: string; lang: Language; chi
 function BusinessRow({ b, lang, t }: { b: Business; lang: Language; t: Dictionary["ask"] }) {
   const category = b.category ? (lang === "te" ? b.category.name_te : b.category.name_en) : null;
   const where = b.kind === "individual" ? b.service_area || b.city : b.city;
-  const whatsapp = b.whatsapp || b.phone;
+  const whatsapp = b.whatsapp; // only if the business accepts WhatsApp
   return (
     <li className="flex gap-3 rounded-xl border border-line bg-surface p-3">
       <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-lg bg-brand-50 text-xl">
