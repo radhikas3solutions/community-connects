@@ -197,6 +197,8 @@ class BusinessOut(BaseModel):
     source: str | None = None
     # Where the imported record lives (OpenStreetMap entries link back for attribution).
     source_url: str | None = None
+    # Imported entries: "Endocrinologist", "Indian, Biryani · Restaurant" (English).
+    specialty: str | None = None
     category: CategoryOut | None
     menu: list[MenuItemOut]
     # True when an individual's contact details are withheld from a signed-out visitor.

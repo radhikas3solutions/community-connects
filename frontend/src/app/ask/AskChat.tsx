@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { BrowserApiError, browserApi } from "@/lib/browser-api";
-import { businessName, telHref, whatsappChatHref } from "@/lib/directory";
+import { businessName, directionsHref, telHref, whatsappChatHref } from "@/lib/directory";
 import { formatPrice, localized } from "@/lib/format";
 import type { Business, Language, Listing } from "@/lib/types";
 
@@ -285,6 +285,7 @@ function BusinessRow({ b, lang, t }: { b: Business; lang: Language; t: Dictionar
   const category = b.category ? (lang === "te" ? b.category.name_te : b.category.name_en) : null;
   const where = b.kind === "individual" ? b.service_area || b.city : b.city;
   const whatsapp = b.whatsapp; // only if the business accepts WhatsApp
+  const map = directionsHref(b);
   return (
     <li className="flex gap-3 rounded-xl border border-line bg-surface p-3">
       <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-lg bg-brand-50 text-xl">
@@ -295,8 +296,9 @@ function BusinessRow({ b, lang, t }: { b: Business; lang: Language; t: Dictionar
           {businessName(b, lang)}
         </Link>
         {b.is_verified && <span className="ml-1 text-xs text-brand-700">✓ {t.verified}</span>}
+        {b.specialty && <p className="truncate text-sm font-semibold text-brand-700">{b.specialty}</p>}
         <p className="truncate text-sm text-muted">{[category, where].filter(Boolean).join(" · ")}</p>
-        {(b.phone || whatsapp) && (
+        {(b.phone || whatsapp || map) && (
           <div className="mt-2 flex flex-wrap gap-2 text-sm">
             {b.phone && (
               <a href={telHref(b.phone)} className="rounded-full bg-brand-600 px-3 py-1 font-semibold text-white">
@@ -311,6 +313,16 @@ function BusinessRow({ b, lang, t }: { b: Business; lang: Language; t: Dictionar
                 className="rounded-full border border-line px-3 py-1 font-semibold"
               >
                 💬 {t.whatsapp}
+              </a>
+            )}
+            {map && (
+              <a
+                href={map}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full border border-line px-3 py-1 font-semibold"
+              >
+                🗺️ {t.map}
               </a>
             )}
           </div>

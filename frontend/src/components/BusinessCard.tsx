@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { businessName } from "@/lib/directory";
+import { businessName, directionsHref, telHref } from "@/lib/directory";
 import type { Business, Language } from "@/lib/types";
 
 export function BusinessCard({ business: b, lang, t }: { business: Business; lang: Language; t: Dictionary }) {
   const category = b.category ? (lang === "te" ? b.category.name_te : b.category.name_en) : null;
   const where = b.kind === "individual" ? b.service_area || b.city : b.city;
+  const map = directionsHref(b);
   const langs = b.languages
     .slice(0, 3)
     .map((code) => t.directory.languageNames[code] ?? code)
@@ -38,6 +39,7 @@ export function BusinessCard({ business: b, lang, t }: { business: Business; lan
             </span>
           )}
         </h3>
+        {b.specialty && <p className="text-sm font-semibold text-brand-700">{b.specialty}</p>}
         {category && (
           <p className="text-sm text-muted" lang={lang}>
             {category}
@@ -49,6 +51,29 @@ export function BusinessCard({ business: b, lang, t }: { business: Business; lan
           <p className="truncate text-xs text-muted" lang={lang}>
             🗣️ {langs}
           </p>
+        )}
+        {(b.phone || map) && (
+          // Above the stretched link (relative z-10) so the buttons work on their own.
+          <div className="relative z-10 flex flex-wrap gap-2 pt-2 text-sm" lang={lang}>
+            {b.phone && (
+              <a
+                href={telHref(b.phone)}
+                className="rounded-full bg-brand-600 px-3 py-1 font-semibold text-white hover:bg-brand-700"
+              >
+                📞 {t.directory.call}
+              </a>
+            )}
+            {map && (
+              <a
+                href={map}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full border border-line px-3 py-1 font-semibold hover:bg-brand-50"
+              >
+                🗺️ {t.directory.map}
+              </a>
+            )}
+          </div>
         )}
       </div>
     </article>

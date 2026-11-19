@@ -36,6 +36,7 @@ from app.schemas.business import (
 from app.schemas.common import Page
 from app.services.ai_menu import MenuError, MenuReader
 from app.services.osm import osm_url
+from app.services.subtypes import entry_subtype
 
 log = logging.getLogger(__name__)
 router = APIRouter(prefix="/businesses", tags=["directory"])
@@ -60,6 +61,7 @@ def _viewer(db: Session, user: AuthUser | None) -> Profile | None:
 def to_out(business: Business, *, signed_in: bool, viewer: Profile | None) -> BusinessOut:
     out = BusinessOut.model_validate(business, from_attributes=True)
     out.can_edit = _can_edit(business, viewer)
+    out.specialty = entry_subtype(business.source, business.source_data)
     if business.source == "osm" and business.external_id:
         out.source_url = osm_url(business.external_id)
     if not out.can_edit:

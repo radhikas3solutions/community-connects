@@ -104,6 +104,7 @@ export default async function BusinessPage({ params }: { params: Params }) {
           <h1 className="text-3xl font-bold" lang={lang === "te" && b.name_te ? "te" : undefined}>
             {name}
           </h1>
+          {b.specialty && <p className="mt-1 text-lg font-semibold text-brand-700">{b.specialty}</p>}
           <p className="mt-1 text-muted" lang={lang}>
             {[category, b.kind === "individual" ? d.individual : null].filter(Boolean).join(" · ")}
             {b.is_verified && <span className="ml-2 font-semibold text-brand-700">✓ {d.verified}</span>}

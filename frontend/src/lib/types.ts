@@ -110,6 +110,7 @@ export interface Business {
   is_verified: boolean;
   source: string | null; // imported from public data: "npi" = NPI Registry, "osm" = OpenStreetMap
   source_url?: string | null; // the OpenStreetMap record (attribution, and where to fix it)
+  specialty?: string | null; // imported entries: "Endocrinologist", "Indian · Restaurant" (English)
   category: Category | null;
   menu: MenuItem[];
   /** An individual's phone/email withheld from a signed-out visitor. */

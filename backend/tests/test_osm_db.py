@@ -193,3 +193,19 @@ def test_search_lists_only_callable_entries(db_client: TestClient) -> None:
     ]
     assert "Callable Cafe" in names
     assert "Silent Cafe" not in names and "Filler Cafe" not in names
+
+
+def test_specialty_labels() -> None:
+    from app.services.subtypes import entry_subtype
+
+    endo = ["Internal Medicine", "Internal Medicine, Endocrinology, Diabetes & Metabolism"]
+    assert entry_subtype("npi", {"specialties": endo}) == "Endocrinologist"
+    assert entry_subtype("npi", {"specialties": ["Obstetrics & Gynecology"]}) == "OB/GYN"
+    assert entry_subtype("npi", {"specialties": ["Pediatrics"]}) == "Pediatrician"
+    braces = ["Dentist", "Dentist, Orthodontics and Dentofacial Orthopedics"]
+    assert entry_subtype("npi", {"specialties": braces}) == "Orthodontist (braces)"
+    food = {"amenity": "restaurant", "cuisine": "indian;biryani"}
+    assert entry_subtype("osm", food) == "Indian, Biryani · Restaurant"
+    assert entry_subtype("osm", {"amenity": "cafe", "cuisine": "coffee_shop"}) == "Coffee · Café"
+    assert entry_subtype("osm", {"amenity": "restaurant"}) == "Restaurant"
+    assert entry_subtype(None, None) is None

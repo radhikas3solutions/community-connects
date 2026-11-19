@@ -121,6 +121,7 @@ class DatabaseTools:
                     "id": str(out.id),
                     "name": out.name,
                     "category": out.category.slug if out.category else None,
+                    "type": out.specialty,
                     "kind": out.kind.value,
                     "town": out.city,
                     "serves": out.service_area,
