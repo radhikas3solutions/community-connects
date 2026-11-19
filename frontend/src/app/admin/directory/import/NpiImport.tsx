@@ -17,16 +17,13 @@ type Result = {
   updated: number;
   already_listed: number;
   skipped_removed: number;
+  capped: boolean;
 };
 type Row = { zip: string; preset: string; result?: Result; error?: string };
 
-const DEFAULT_PRESETS = ["dentists", "pediatricians", "family"];
-
 export function NpiImport({ options, t, lang }: { options: NpiOptions; t: Dictionary["npiImport"]; lang: Language }) {
   const [zips, setZips] = useState(options.default_zips.join("\n"));
-  const [presets, setPresets] = useState<string[]>(
-    options.presets.map((p) => p.key).filter((k) => DEFAULT_PRESETS.includes(k)),
-  );
+  const [presets, setPresets] = useState<string[]>(options.presets.map((p) => p.key));
   const [rows, setRows] = useState<Row[]>([]);
   const [running, setRunning] = useState(false);
   const stop = useRef(false);
@@ -57,7 +54,8 @@ export function NpiImport({ options, t, lang }: { options: NpiOptions; t: Dictio
     setRunning(false);
   }
 
-  const sum = (k: keyof Omit<Result, "postal_code" | "preset">) => rows.reduce((n, r) => n + (r.result?.[k] ?? 0), 0);
+  const sum = (k: keyof Omit<Result, "postal_code" | "preset" | "capped">) =>
+    rows.reduce((n, r) => n + (r.result?.[k] ?? 0), 0);
   const finished = rows.filter((r) => r.result || r.error).length;
   const cell = "px-2 py-1 text-right tabular-nums";
 
@@ -134,7 +132,14 @@ export function NpiImport({ options, t, lang }: { options: NpiOptions; t: Dictio
               {rows.map((r) => (
                 <tr key={`${r.zip}-${r.preset}`} className="border-t border-line">
                   <td className="px-2 py-1 font-mono">{r.zip}</td>
-                  <td className="px-2 py-1">{label(r.preset)}</td>
+                  <td className="px-2 py-1">
+                    {label(r.preset)}
+                    {r.result?.capped && (
+                      <span className="ml-1 text-xs text-accent-600" title={t.capped}>
+                        ⚠️ {t.capped}
+                      </span>
+                    )}
+                  </td>
                   {r.result ? (
                     <>
                       <td className={cell}>{r.result.practices}</td>

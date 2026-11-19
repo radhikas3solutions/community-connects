@@ -18,44 +18,64 @@ log = logging.getLogger(__name__)
 NPI_API = "https://npiregistry.cms.hhs.gov/api/"
 PAGE_SIZE = 200  # API maximum per request
 MAX_SKIP = 1000  # API maximum offset
+MAX_RESULTS = MAX_SKIP + PAGE_SIZE  # most one search can return
 
 
 @dataclass(frozen=True)
 class Preset:
     key: str
     label: str
-    taxonomy: str  # sent as taxonomy_description; matched as a substring of a specialty
+    # Sent as taxonomy_description (the registry matches it anywhere in a specialty); we then
+    # keep only specialties that START with it, so "Pediatrics" keeps pediatricians
+    # ("Pediatrics, Neonatal-Perinatal Medicine") but not "Nurse Practitioner, Pediatrics".
+    taxonomy: str
     exclude: tuple[str, ...] = ()
 
 
 PRESETS: dict[str, Preset] = {
     p.key: p
     for p in (
+        Preset("family", "Family doctors", "Family Medicine"),
+        # Also cardiology, GI, endocrinology, kidney, lung, cancer etc. ("Internal Medicine, ...").
+        Preset("internal", "Internal medicine & its specialists", "Internal Medicine"),
+        Preset("pediatricians", "Pediatricians", "Pediatrics"),
+        Preset("obgyn", "OB/GYN", "Obstetrics & Gynecology"),
+        Preset("eye", "Eye doctors (ophthalmologists)", "Ophthalmology"),
+        Preset("optometrists", "Optometrists", "Optometrist"),
+        Preset("dermatology", "Dermatologists", "Dermatology"),
+        Preset("psych_neuro", "Psychiatrists & neurologists", "Psychiatry & Neurology"),
+        Preset("ortho", "Orthopedic surgeons", "Orthopaedic Surgery"),
+        Preset("ent", "Ear, nose & throat (ENT)", "Otolaryngology"),
+        Preset("allergy", "Allergists", "Allergy & Immunology"),
+        Preset("urology", "Urologists", "Urology"),
         # Dental public health is a non-clinical role; its addresses are often personal.
         Preset("dentists", "Dentists", "Dentist", exclude=("Dental Public Health",)),
-        Preset("pediatricians", "Pediatricians", "Pediatrics"),
-        Preset("family", "Family doctors", "Family Medicine"),
-        Preset("internal", "Internal medicine", "Internal Medicine"),
-        Preset("obgyn", "OB/GYN", "Obstetrics & Gynecology"),
-        Preset("eye", "Eye doctors (optometrists)", "Optometrist"),
     )
 }
 
-# Northern Virginia ZIPs around the community (Loudoun and western Fairfax).
+# Every Northern Virginia ZIP with homes or offices: Loudoun, Fairfax County and City,
+# Falls Church, Arlington, Alexandria, Prince William, Manassas and Manassas Park.
 DEFAULT_ZIPS = [
-    "20105",  # Aldie, Stone Ridge
-    "20152",  # South Riding
-    "20147",  # Ashburn
-    "20148",  # Ashburn, Brambleton
-    "20151",  # Chantilly
-    "20166",  # Dulles, Sterling
-    "20164",  # Sterling
-    "20165",  # Potomac Falls
-    "20171",  # Herndon
-    "20120",  # Centreville
-    "20175",  # Leesburg
-    "20176",  # Leesburg
-]
+    # Loudoun
+    "20105", "20117", "20129", "20132", "20141", "20147", "20148", "20152", "20158", "20164",
+    "20165", "20166", "20175", "20176", "20180", "20197",
+    # Fairfax County, Fairfax City, Falls Church
+    "20120", "20121", "20124", "20151", "20170", "20171", "20190", "20191", "20194", "22003",
+    "22015", "22027", "22030", "22031", "22032", "22033", "22039", "22041", "22042", "22043",
+    "22044", "22046", "22060", "22066", "22079", "22101", "22102", "22124", "22150", "22151",
+    "22152", "22153", "22180", "22181", "22182", "22303", "22306", "22307", "22308", "22309",
+    "22310", "22312",
+    # Arlington
+    "22201", "22202", "22203", "22204", "22205", "22206", "22207", "22209", "22213",
+    # Alexandria
+    "22301", "22302", "22304", "22305", "22311", "22314", "22315",
+    # Prince William, Manassas, Manassas Park
+    "20109", "20110", "20111", "20112", "20136", "20143", "20155", "20169", "20181", "22025",
+    "22026", "22125", "22172", "22191", "22192", "22193",
+]  # fmt: skip
+
+# Registry spellings that differ from how the town writes its name.
+CITY_FIXES = {"Mc Lean": "McLean", "Ft Belvoir": "Fort Belvoir"}
 
 DOCTOR_CREDENTIALS = {"MD", "DO", "DDS", "DMD", "OD", "DPM", "DC"}
 UPPER_WORDS = DOCTOR_CREDENTIALS | {"NP", "PA", "PT", "DPT", "FNP", "MPH", "MS", "PHD", "II", "III"}
@@ -97,6 +117,8 @@ class HttpNpiClient:
             results += page
             if len(page) < PAGE_SIZE:
                 break
+        else:
+            log.warning("NPI search hit the registry's limit: %s %s", postal_code, taxonomy)
         return results
 
 
@@ -153,7 +175,8 @@ def _matching_specialties(record: dict[str, Any], preset: Preset) -> list[str]:
     found = []
     for t in record.get("taxonomies") or []:
         desc = t.get("desc") or ""
-        if term in desc.lower() and not any(x.lower() in desc.lower() for x in preset.exclude):
+        low = desc.lower()
+        if low.startswith(term) and not any(x.lower() in low for x in preset.exclude):
             found.append(desc)
     return found
 
@@ -210,7 +233,9 @@ def practices_from_results(
                 name=name,
                 is_organization=is_org,
                 address=_tidy(street)[:200],
-                city=_tidy(loc.get("city") or "")[:80],
+                city=CITY_FIXES.get(_tidy(loc.get("city") or ""), _tidy(loc.get("city") or ""))[
+                    :80
+                ],
                 zip_code=zip5,
                 phone=f"{phone[:3]}-{phone[3:6]}-{phone[6:]}",
             )

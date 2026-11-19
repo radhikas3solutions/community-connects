@@ -9,6 +9,7 @@ of duplicating them, and never brings back an entry a moderator removed or rejec
 """
 
 import logging
+from collections import Counter
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -21,6 +22,7 @@ from app.models import Business, Category, Profile
 from app.models.enums import DirectoryStatus, EntryKind
 from app.services.npi import (
     DEFAULT_ZIPS,
+    MAX_RESULTS,
     PRESETS,
     NpiClient,
     NpiError,
@@ -34,7 +36,6 @@ log = logging.getLogger(__name__)
 router = APIRouter(prefix="/admin/import", tags=["admin"])
 
 SOURCE = "npi"
-CATEGORY_SLUG = "doctors"
 
 
 class PresetOut(BaseModel):
@@ -61,6 +62,7 @@ class NpiImportResult(BaseModel):
     updated: int
     already_listed: int  # someone already added this phone number
     skipped_removed: int  # a moderator removed or rejected it before
+    capped: bool = False  # the registry returned its maximum: some providers may be missing
 
 
 @router.get("/npi", response_model=NpiOptions)
@@ -75,7 +77,7 @@ def _merge(existing: list[str], new: list[str]) -> list[str]:
     return list(dict.fromkeys([*existing, *new]))
 
 
-def _apply(business: Business, practice: Practice) -> None:
+def _apply(business: Business, practice: Practice, categories: dict[str, int]) -> None:
     data = business.source_data or {}
     providers = _merge(data.get("providers", []), practice.providers)
     specialties = _merge(data.get("specialties", []), practice.specialties)
@@ -93,6 +95,9 @@ def _apply(business: Business, practice: Practice) -> None:
     business.address = practice.address or None
     business.city = practice.city or None
     business.zip_code = practice.zip_code
+    # Dental-only practices go under Dentists; anything with a physician under Doctors.
+    dental = all(s.lower().startswith("dentist") for s in specialties)
+    business.category_id = categories.get("dentists" if dental else "doctors")
 
 
 def _phone_listed(db: Session, phone: str | None) -> bool:
@@ -112,6 +117,52 @@ def _phone_listed(db: Session, phone: str | None) -> bool:
     )
 
 
+def doctor_categories(db: Session) -> dict[str, int]:
+    rows = db.execute(
+        select(Category.slug, Category.id).where(Category.slug.in_(["doctors", "dentists"]))
+    ).all()
+    return {slug: category_id for slug, category_id in rows}
+
+
+def save_practices(
+    db: Session, practices: list[Practice], profile: Profile, categories: dict[str, int]
+) -> dict[str, int]:
+    """Create or update entries for practices (used by the API and the bulk-file command)."""
+    result = Counter(created=0, updated=0, already_listed=0, skipped_removed=0)
+    for practice in practices:
+        existing = db.scalar(
+            select(Business).where(Business.source == SOURCE, Business.external_id == practice.key)
+        )
+        if existing is not None:
+            if existing.status in (DirectoryStatus.REMOVED, DirectoryStatus.REJECTED):
+                result["skipped_removed"] += 1
+                continue
+            _apply(existing, practice, categories)
+            result["updated"] += 1
+            continue
+
+        # A member (or another source) may already have listed this practice.
+        if _phone_listed(db, practice.phone):
+            result["already_listed"] += 1
+            continue
+
+        business = Business(
+            kind=EntryKind.BUSINESS,
+            status=DirectoryStatus.ACTIVE,
+            submitted_by_id=profile.id,
+            name=practice.name[:120],
+            languages=[],
+            source=SOURCE,
+            external_id=practice.key,
+        )
+        _apply(business, practice, categories)
+        db.add(business)
+        db.flush()  # so a later practice in this batch sees it
+        result["created"] += 1
+
+    return dict(result)
+
+
 @router.post("/npi", response_model=NpiImportResult)
 def import_npi(
     payload: NpiImportRequest,
@@ -122,8 +173,7 @@ def import_npi(
     preset = PRESETS.get(payload.preset)
     if preset is None:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Unknown provider type")
-    category_id = db.scalar(select(Category.id).where(Category.slug == CATEGORY_SLUG))
-
+    categories = doctor_categories(db)
     try:
         records = npi.search(payload.postal_code, preset.taxonomy)
     except NpiError as exc:
@@ -137,44 +187,16 @@ def import_npi(
         postal_code=payload.postal_code,
         preset=preset.key,
         records=len(records),
+        capped=len(records) >= MAX_RESULTS,
         practices=len(practices),
         created=0,
         updated=0,
         already_listed=0,
         skipped_removed=0,
     )
-    for practice in practices:
-        existing = db.scalar(
-            select(Business).where(Business.source == SOURCE, Business.external_id == practice.key)
-        )
-        if existing is not None:
-            if existing.status in (DirectoryStatus.REMOVED, DirectoryStatus.REJECTED):
-                result.skipped_removed += 1
-                continue
-            _apply(existing, practice)
-            result.updated += 1
-            continue
-
-        # A member (or another source) may already have listed this practice.
-        if _phone_listed(db, practice.phone):
-            result.already_listed += 1
-            continue
-
-        business = Business(
-            kind=EntryKind.BUSINESS,
-            status=DirectoryStatus.ACTIVE,
-            category_id=category_id,
-            submitted_by_id=profile.id,
-            name=practice.name[:120],
-            languages=[],
-            source=SOURCE,
-            external_id=practice.key,
-        )
-        _apply(business, practice)
-        db.add(business)
-        db.flush()  # so a later practice in this batch sees it
-        result.created += 1
-
+    counts = save_practices(db, practices, profile, categories)
+    for name, n in counts.items():
+        setattr(result, name, n)
     db.commit()
     log.info("NPI import %s", result.model_dump())
     return result

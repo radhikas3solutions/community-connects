@@ -33,6 +33,7 @@ CATEGORIES: list[tuple[str, CategoryKind, str, str, str, bool]] = [
     ("restaurants", B, "Restaurants", "రెస్టారెంట్లు", "🍽️", False),
     ("indian-grocery", B, "Indian Grocery Stores", "భారతీయ కిరాణా దుకాణాలు", "🛒", True),
     ("doctors", B, "Doctors & Clinics", "వైద్యులు & క్లినిక్‌లు", "🩺", False),
+    ("dentists", B, "Dentists", "దంత వైద్యులు", "🦷", False),
     ("real-estate", B, "Real Estate", "రియల్ ఎస్టేట్", "🏠", False),
     ("tax-accounting", B, "Tax & Accounting", "పన్ను & అకౌంటింగ్", "🧾", False),
     ("immigration-legal", B, "Immigration & Legal", "ఇమ్మిగ్రేషన్ & న్యాయ సేవలు", "⚖️", True),

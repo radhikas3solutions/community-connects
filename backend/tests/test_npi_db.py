@@ -178,6 +178,17 @@ def test_grouping_and_filtering() -> None:
     assert practices_from_results(RECORDS, "20152", PRESETS["dentists"]) == []
 
 
+def test_only_physicians_match_a_physician_specialty() -> None:
+    loc = _address("LOCATION", "1 MAIN ST", "ASHBURN", "20147", "703-111-2222")
+    loc2 = _address("LOCATION", "2 MAIN ST", "ASHBURN", "20147", "703-111-3333")
+    records = [
+        _person("1", "ANN", "LEE", "MD", loc, taxes=("Pediatrics, Neonatal-Perinatal Medicine",)),
+        _person("2", "BO", "KIM", "CPNP", loc2, taxes=("Nurse Practitioner, Pediatrics",)),
+    ]
+    names = [p.name for p in practices_from_results(records, "20147", PRESETS["pediatricians"])]
+    assert names == ["Dr. Ann Lee, MD"]
+
+
 def test_person_names() -> None:
     from app.services.npi import _person_name
 
@@ -234,6 +245,7 @@ def test_import_reimport_and_respect_removals(npi: tuple[TestClient, FakeNpi]) -
         "updated": 0,
         "already_listed": 1,
         "skipped_removed": 0,
+        "capped": False,
     }
     assert fake.calls == [("20105", "Dentist")]
 
@@ -241,7 +253,7 @@ def test_import_reimport_and_respect_removals(npi: tuple[TestClient, FakeNpi]) -
     found = client.get("/api/v1/businesses", params={"q": "dentist", "city": "Aldie"}).json()
     smiles = next(b for b in found["items"] if b["name"] == "Aldie Smiles")
     assert smiles["source"] == "npi" and smiles["is_verified"] is False
-    assert smiles["category"]["slug"] == "doctors"
+    assert smiles["category"]["slug"] == "dentists"
     assert smiles["address"] == "24560 Southpoint Dr # 370"
     assert "Dr. Edward Park, DMD" in smiles["description_en"]
 

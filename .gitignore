@@ -24,3 +24,6 @@ test-results/
 # os / editor
 .DS_Store
 .idea/
+
+# large public data downloads (NPPES etc.)
+backend/data_imports/

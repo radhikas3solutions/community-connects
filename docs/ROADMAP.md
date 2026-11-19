@@ -63,8 +63,17 @@ Done:
   has no matches, and answers with a short reply plus result cards (call / WhatsApp). Cards
   are limited to entries the tools actually returned. ~2-3¢ per question, 4-12 s
 - NPI Registry import (`/admin/directory/import`, `POST /admin/import/npi`, staff only):
-  dentists, pediatricians, family/internal medicine, OB/GYN and optometrists per ZIP from the
-  public CMS registry. Practice LOCATION address only (mailing addresses are often homes),
+  physicians (family, internal medicine and its specialists, pediatrics, OB/GYN,
+  ophthalmology, dermatology, psychiatry/neurology, orthopedics, ENT, allergy, urology),
+  optometrists and dentists, per ZIP across all of Northern Virginia (98 ZIPs) from the
+  public CMS registry. Only specialties that start with the searched one count, so nurse
+  practitioners and therapists aren't listed as doctors; dental-only practices go in their
+  own "Dentists" category.
+  The registry's search API misses providers (e.g. most plain "Pediatrics" physicians), so
+  the complete import reads CMS's monthly full file instead:
+  `python -m app.import_nppes data_imports/NPPES_Data_Dissemination_<Month>_<Year>_V2.zip`
+  (download from https://download.cms.gov/nppes/NPI_Files.html; ~1 GB, read from the zip in
+  ~10 min). The admin page's API import stays for quick per-ZIP top-ups. Practice LOCATION address only (mailing addresses are often homes),
   must be in the ZIP; providers sharing a practice phone become one entry listing them;
   live but unverified with a "Public record" label; re-import updates (keyed on ZIP + phone)
   and never revives removed/rejected entries; skips phones a member already listed.
