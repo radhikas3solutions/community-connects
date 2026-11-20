@@ -101,12 +101,25 @@ records to **DNS only** (grey cloud) so Vercel and Fly can issue certificates.
 2. Supabase -> SQL editor:
    `update profiles set role = 'admin' where email = '<your sign-in email>';`
    (or match on `id`, from Authentication -> Users).
-3. **Doctors and dentists** (run on your computer, writes to the production database). Download the
-   monthly file from https://download.cms.gov/nppes/NPI_Files.html into `backend/data_imports/`, then:
+3. **Doctors and dentists** run on the API server, so the database password never leaves Fly.
+   Download the monthly file from https://download.cms.gov/nppes/NPI_Files.html into
+   `backend/data_imports/nppes.zip`, then cut it down to Northern Virginia (about 7 MB) and run it:
 
    ```sh
-   docker compose exec -e DATABASE_URL='<production DATABASE_URL>' api \
-     python -m app.import_nppes /app/data_imports/NPPES_Data_Dissemination_<Month>_<Year>_V2.zip
+   # on your computer (local docker): keep only Northern Virginia rows
+   docker compose exec api python -c "
+   import io,re,zipfile
+   from app.import_nppes import _main_member
+   from app.services.npi import DEFAULT_ZIPS
+   hint=re.compile(r'\"VA\",\"('+'|'.join(DEFAULT_ZIPS)+')')
+   with zipfile.ZipFile('/app/data_imports/nppes.zip') as zf, zf.open(_main_member(zf)) as raw:
+       m=_main_member(zf); lines=io.TextIOWrapper(raw,encoding='utf-8',errors='replace',newline='')
+       with zipfile.ZipFile('/app/data_imports/nppes_nova.zip','w',zipfile.ZIP_DEFLATED) as o, o.open(m,'w') as w:
+           w.write(next(lines).encode()); [w.write(l.encode()) for l in lines if hint.search(l)]
+   "
+   # upload to one API machine and import there (pick the machine id from `fly machines list`)
+   fly ssh sftp put backend/data_imports/nppes_nova.zip /tmp/nppes_nova.zip --app askmitra-api
+   fly ssh console --app askmitra-api --machine <id> -C "python -m app.import_nppes /tmp/nppes_nova.zip"
    ```
 
 4. **Restaurants:** `https://askmitra.ai/admin/directory/import` -> OpenStreetMap -> Start.
