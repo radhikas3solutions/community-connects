@@ -10,9 +10,8 @@ export function Header({ t, lang, signedIn }: { t: Dictionary; lang: Language; s
     <header className="sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur">
       <Container className="flex h-16 items-center gap-4">
         <Link href="/" className="flex items-center gap-2 font-bold text-accent-600">
-          <span aria-hidden className="grid size-8 place-items-center rounded-xl bg-accent-500 text-white">
-            AM
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element -- tiny static logo */}
+          <img src="/icons/logo-64.png" alt="" width={32} height={32} className="size-8 rounded-xl" />
           <span className="hidden sm:inline">{t.brand}</span>
         </Link>
 

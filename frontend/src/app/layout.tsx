@@ -22,10 +22,11 @@ export const metadata: Metadata = {
   title: { default: "AskMitra · Northern Virginia", template: "%s · AskMitra" },
   description:
     "Buy, sell and give away items, find local Indian & Telugu businesses, deals, jobs, movies and events in Northern Virginia.",
+  appleWebApp: { capable: true, title: "AskMitra", statusBarStyle: "default" },
   openGraph: { type: "website", siteName: "AskMitra", locale: "en_US", alternateLocale: ["te_IN"] },
 };
 
-export const viewport: Viewport = { themeColor: "#1d5bd0", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#cc4f0b", width: "device-width", initialScale: 1 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const [{ lang, t }, session] = await Promise.all([getDictionary(), getSession()]);
