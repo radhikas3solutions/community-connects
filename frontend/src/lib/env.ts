@@ -8,7 +8,13 @@ const PRODUCTION_PUBLISHABLE_KEY = "sb_publishable_-4NDA85dBcC0lrKPx5GOyw_EnJmUE
 export const SUPABASE_ANON_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   (SUPABASE_URL === PRODUCTION_SUPABASE_URL ? PRODUCTION_PUBLISHABLE_KEY : "");
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+// Vercel sets NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL (e.g. "askmitra.ai") on its builds, so share
+// links never point at localhost even if NEXT_PUBLIC_SITE_URL is missing there.
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
 
 /** Browser-reachable API base URL. */
 export const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";

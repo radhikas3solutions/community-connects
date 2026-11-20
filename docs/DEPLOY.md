@@ -30,10 +30,17 @@ Use a **new** project for production, so test accounts and data stay out of it.
 4. Storage -> New bucket `listing-photos`, **Public: off**.
 5. Authentication -> URL Configuration:
    - Site URL: `https://askmitra.ai`
-   - Redirect URLs: `https://askmitra.ai/auth/callback`, `https://www.askmitra.ai/auth/callback`
+   - Redirect URLs: `https://askmitra.ai/**`, `https://www.askmitra.ai/**`
 6. Authentication -> Providers -> Google: same client ID/secret as development, and in Google Cloud
    Console add `askmitra.ai` to the OAuth consent screen's authorized domains.
-7. Authentication -> Emails: set up custom SMTP (e.g. Resend or Postmark) before launch. Supabase's
+7. Authentication -> Emails -> Templates: in **Magic Link** and **Confirm signup**, change the
+   link to the line below, so sign-in links work in any browser or device (the default link only
+   works in the browser that asked for it, which fails when opened from the Gmail app or a phone):
+
+   ```html
+   <a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email">Sign in to AskMitra</a>
+   ```
+8. Authentication -> Emails: set up custom SMTP (e.g. Resend or Postmark) before launch. Supabase's
    built-in email is limited to a few messages an hour.
 
 ## 3. API on Fly.io
