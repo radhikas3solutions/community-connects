@@ -7,12 +7,12 @@ import { createClient } from "@/lib/supabase/client";
 
 type State = "idle" | "sending" | "sent" | "error";
 
-export function LoginForm({ t, next }: { t: Dictionary["auth"]; next: string }) {
+export function LoginForm({ t, next, google: showGoogle }: { t: Dictionary["auth"]; next: string; google: boolean }) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<State>("idle");
+  const [problem, setProblem] = useState("");
 
-  const redirectTo = () =>
-    `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
+  const redirectTo = () => `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
 
   async function sendLink(e: FormEvent) {
     e.preventDefault();
@@ -21,6 +21,11 @@ export function LoginForm({ t, next }: { t: Dictionary["auth"]; next: string }) 
       email,
       options: { emailRedirectTo: redirectTo() },
     });
+    if (error) {
+      console.error("[login] sign-in email failed:", error.code ?? error.status, error.message);
+      const limited = error.status === 429 || /rate limit/i.test(error.message);
+      setProblem(limited ? t.tooManyEmails : `${t.sendFailed} (${error.code ?? error.message})`);
+    }
     setState(error ? "error" : "sent");
   }
 
@@ -29,7 +34,10 @@ export function LoginForm({ t, next }: { t: Dictionary["auth"]; next: string }) 
       provider: "google",
       options: { redirectTo: redirectTo() },
     });
-    if (error) setState("error");
+    if (error) {
+      setProblem(`${t.error} (${error.code ?? error.message})`);
+      setState("error");
+    }
   }
 
   if (state === "sent") {
@@ -61,17 +69,21 @@ export function LoginForm({ t, next }: { t: Dictionary["auth"]; next: string }) 
       </form>
       {state === "error" && (
         <p role="alert" className="text-sm text-red-700">
-          {t.error}
+          {problem || t.error}
         </p>
       )}
-      <div className="flex items-center gap-3 text-xs text-muted">
-        <span className="h-px flex-1 bg-line" />
-        {t.or}
-        <span className="h-px flex-1 bg-line" />
-      </div>
-      <Button type="button" variant="secondary" className="w-full" onClick={google}>
-        {t.google}
-      </Button>
+      {showGoogle && (
+        <>
+          <div className="flex items-center gap-3 text-xs text-muted">
+            <span className="h-px flex-1 bg-line" />
+            {t.or}
+            <span className="h-px flex-1 bg-line" />
+          </div>
+          <Button type="button" variant="secondary" className="w-full" onClick={google}>
+            {t.google}
+          </Button>
+        </>
+      )}
     </div>
   );
 }

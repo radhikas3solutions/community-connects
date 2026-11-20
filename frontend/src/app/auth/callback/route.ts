@@ -22,16 +22,20 @@ export async function GET(request: NextRequest) {
   const next = safeNext(searchParams.get("next"));
 
   const supabase = await createClient();
+  let reason = searchParams.get("error_code") || (searchParams.get("error") ? "link_error" : "");
   if (tokenHash && type && EMAIL_TYPES.has(type)) {
     const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
     if (!error) return NextResponse.redirect(new URL(next, origin));
     console.error("[auth/callback] email link failed:", error.code ?? "", error.message);
+    reason = error.code || "link_error";
   } else if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(new URL(next, origin));
     console.error("[auth/callback] code exchange failed:", error.code ?? "", error.message);
-  } else {
+    reason = error.code || "code_error";
+  } else if (!reason) {
     console.error("[auth/callback] no code in callback URL:", searchParams.toString());
+    reason = "no_code";
   }
 
   // A used/expired link opened again (double click, mail-app prefetch) by someone who is
@@ -39,5 +43,6 @@ export async function GET(request: NextRequest) {
   const { data } = await supabase.auth.getUser();
   if (data.user) return NextResponse.redirect(new URL(next, origin));
 
-  return NextResponse.redirect(new URL(`/login?error=callback&next=${encodeURIComponent(next)}`, origin));
+  const params = new URLSearchParams({ error: reason.slice(0, 40), next });
+  return NextResponse.redirect(new URL(`/login?${params}`, origin));
 }

@@ -46,6 +46,11 @@ const en = {
     google: "Continue with Google",
     notConfigured: "Sign-in isn't configured yet. Add your Supabase keys to .env.",
     error: "Sign-in failed. Please try again.",
+    linkExpired: "That sign-in link has expired or was already used. Enter your email to get a new one.",
+    otherBrowser:
+      "Please open the sign-in link in the same browser where you asked for it, or request a new link below.",
+    tooManyEmails: "Too many sign-in emails were sent in the last hour. Please wait a while and try again.",
+    sendFailed: "We couldn't send the sign-in email. Please try again.",
   },
   account: {
     title: "My account",
@@ -415,6 +420,10 @@ const te: Dictionary = {
     google: "Google తో కొనసాగండి",
     notConfigured: "సైన్-ఇన్ ఇంకా కాన్ఫిగర్ చేయలేదు.",
     error: "సైన్-ఇన్ విఫలమైంది. మళ్ళీ ప్రయత్నించండి.",
+    linkExpired: "ఈ సైన్ ఇన్ లింక్ గడువు ముగిసింది లేదా ఇప్పటికే వాడారు. కొత్త లింక్ కోసం మీ ఈమెయిల్ ఇవ్వండి.",
+    otherBrowser: "లింక్ అడిగిన బ్రౌజర్‌లోనే సైన్ ఇన్ లింక్‌ను తెరవండి, లేదా కింద కొత్త లింక్ అడగండి.",
+    tooManyEmails: "గత గంటలో చాలా సైన్ ఇన్ ఈమెయిల్స్ పంపాము. కాసేపాగి మళ్ళీ ప్రయత్నించండి.",
+    sendFailed: "సైన్ ఇన్ ఈమెయిల్ పంపలేకపోయాము. మళ్ళీ ప్రయత్నించండి.",
   },
   account: {
     title: "నా ఖాతా",
