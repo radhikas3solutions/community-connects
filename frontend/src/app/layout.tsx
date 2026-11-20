@@ -19,10 +19,10 @@ const telugu = Noto_Sans_Telugu({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Community Connect · Northern Virginia", template: "%s · Community Connect" },
+  title: { default: "AskMitra · Northern Virginia", template: "%s · AskMitra" },
   description:
     "Buy, sell and give away items, find local Indian & Telugu businesses, deals, jobs, movies and events in Northern Virginia.",
-  openGraph: { type: "website", siteName: "Community Connect", locale: "en_US", alternateLocale: ["te_IN"] },
+  openGraph: { type: "website", siteName: "AskMitra", locale: "en_US", alternateLocale: ["te_IN"] },
 };
 
 export const viewport: Viewport = { themeColor: "#1d5bd0", width: "device-width", initialScale: 1 };

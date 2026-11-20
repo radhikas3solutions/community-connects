@@ -39,7 +39,7 @@ test.describe("UI foundation", () => {
   test("account page requires sign-in", async ({ page }) => {
     await page.goto("/account");
     await expect(page).toHaveURL(/\/login/);
-    await expect(page.getByRole("heading", { name: "Sign in to Community Connect" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Sign in to AskMitra" })).toBeVisible();
   });
 
   test("sell page requires sign-in", async ({ page }) => {

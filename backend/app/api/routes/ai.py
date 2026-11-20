@@ -33,7 +33,7 @@ router = APIRouter(prefix="/ai", tags=["ai"])
 FEATURE = "draft_listing"
 PROBLEM_MESSAGES = {
     "no_item": "We couldn't find an item to list in these photos.",
-    "prohibited": "This item can't be listed on Community Connect.",
+    "prohibited": "This item can't be listed on AskMitra.",
     "unclear_photo": "The photos are too unclear to identify the item. Try brighter, closer shots.",
 }
 

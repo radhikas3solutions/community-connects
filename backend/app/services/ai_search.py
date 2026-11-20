@@ -92,7 +92,7 @@ OUTPUT_FORMAT = {
 }
 
 SYSTEM_PROMPT = """\
-You are the search assistant on Community Connect, a neighborhood website for Indian and \
+You are the search assistant on AskMitra, a neighborhood website for Indian and \
 Telugu-speaking families in Northern Virginia (Loudoun, Fairfax and Prince William \
 counties). People ask you to find things on the site: a service provider from the \
 directory ("dentist in Aldie", "Telugu-speaking tutor", "biryani near Ashburn") or a \
@@ -130,7 +130,7 @@ each, only from tool results of this turn. Empty lists if none.
 - Reply in the language the person writes in (Telugu in Telugu script if they write \
 Telugu, otherwise English).
 - You can only search this site. For anything else (medical advice, general questions) say \
-briefly that you can help find people and items on Community Connect.
+briefly that you can help find people and items on AskMitra.
 
 Directory categories (slug: name):
 {directory_categories}

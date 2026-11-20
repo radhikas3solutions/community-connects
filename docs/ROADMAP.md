@@ -1,4 +1,4 @@
-# Community Connect: Seven-Phase Roadmap
+# AskMitra: Seven-Phase Roadmap
 
 | # | Phase | Status |
 |---|-------|--------|
@@ -57,7 +57,7 @@ Done:
   plus a validated draft shown as a live preview; the person ticks consent and submits it
   to the normal review queue (the AI never saves anything). ~1-3¢ per turn, own rate limit
 - "Ask" search assistant (`/ask`, `POST /assistant/ask`, the search box on the home page, and the
-  floating "✨ Ask CC" button on every page; one conversation per tab, kept across pages):
+  floating "✨ Ask Mitra" button on every page; one conversation per tab, kept across pages):
   questions like "dentist in Aldie" in English or Telugu; Claude calls read-only
   `search_directory` / `search_marketplace` tools, widens to neighboring towns when a town
   has no matches, and answers with a short reply plus result cards (call / WhatsApp). Cards
@@ -85,7 +85,7 @@ Done:
   towns get the nearest town centre; places mapped twice or already listed are skipped.
   First run: Loudoun + Herndon/Chantilly/Centreville -> 1,176 places (39 Indian)
 
-- Only callable entries are listed: search and Ask CC show entries with a valid 10-digit US
+- Only callable entries are listed: search and Ask Mitra show entries with a valid 10-digit US
   number (area code/exchange not starting with 0/1); the add/edit form and assistant require
   one; imports skip places without one (OSM 1,176 -> 709 restaurants; NPI drops registry filler)
 

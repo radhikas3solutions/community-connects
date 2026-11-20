@@ -1,6 +1,6 @@
 // UI strings. Telugu copy is a first pass: get native-speaker review before launch.
 const en = {
-  brand: "Community Connect",
+  brand: "AskMitra",
   tagline: "Northern Virginia's neighborhood marketplace",
   nav: {
     browse: "Browse",
@@ -36,7 +36,7 @@ const en = {
     results: (n: number) => `${n} result${n === 1 ? "" : "s"}`,
   },
   auth: {
-    title: "Sign in to Community Connect",
+    title: "Sign in to AskMitra",
     subtitle: "We'll email you a secure sign-in link. No password needed.",
     email: "Email address",
     sendLink: "Email me a sign-in link",
@@ -74,7 +74,7 @@ const en = {
     tooMany: "You can add up to 5 photos.",
     errors: {
       no_item: "We couldn't find an item to list in these photos. Try a photo of just the item.",
-      prohibited: "This item can't be listed on Community Connect.",
+      prohibited: "This item can't be listed on AskMitra.",
       unclear_photo: "The photos are too unclear to identify the item. Try brighter, closer shots.",
       rate_limited: "You've reached today's limit for AI-written listings. Please try again later.",
       bad_photo: "One of the photos couldn't be read. Use JPEG, PNG or WebP photos.",
@@ -143,7 +143,7 @@ const en = {
   errors: { generic: "Something went wrong.", retry: "Try again", notFound: "Page not found", home: "Go home" },
   apiOffline: "Listings are temporarily unavailable.",
   ask: {
-    title: "Ask Community Connect",
+    title: "Ask Mitra",
     intro: "Ask in plain words, in English or Telugu. The assistant searches the directory and the marketplace for you.",
     greeting: "Hi! What are you looking for? For example a dentist in Aldie, a Telugu-speaking tutor, or a free crib.",
     examples: ["Dentist in Aldie", "Telugu-speaking tutor in Ashburn", "Anyone giving away furniture?"],
@@ -162,9 +162,9 @@ const en = {
     wanted: "Wanted",
     verified: "Verified",
     note: "Answers come only from entries on this site. Always check details with the provider.",
-    launcher: "Ask CC",
+    launcher: "Ask Mitra",
     close: "Close",
-    signInPrompt: "Sign in to ask Community Connect about doctors, tutors, helpers, restaurants and items for sale.",
+    signInPrompt: "Sign in to ask Mitra about doctors, tutors, helpers, restaurants and items for sale.",
     signIn: "Sign in",
   },
   assistant: {
@@ -219,7 +219,7 @@ const en = {
     publicRecordNote:
       "Listed from the NPI Registry, the US government's public list of licensed healthcare providers. Hours, languages and other details aren't confirmed, so please call before visiting.",
     goneTitle: "This entry isn't here any more",
-    goneText: "It may have been removed, or updated with a new link. Search the directory or ask Ask CC to find it again.",
+    goneText: "It may have been removed, or updated with a new link. Search the directory or ask Ask Mitra to find it again.",
     goneSearch: "Search the directory",
     osmRecord: "From OpenStreetMap",
     osmRecordNote:
@@ -369,7 +369,7 @@ const en = {
 export type Dictionary = typeof en;
 
 const te: Dictionary = {
-  brand: "కమ్యూనిటీ కనెక్ట్",
+  brand: "ఆస్క్ మిత్ర",
   tagline: "నార్తర్న్ వర్జీనియా పొరుగువారి మార్కెట్‌ప్లేస్",
   nav: {
     browse: "చూడండి",
@@ -405,7 +405,7 @@ const te: Dictionary = {
     results: (n: number) => `${n} ఫలితాలు`,
   },
   auth: {
-    title: "కమ్యూనిటీ కనెక్ట్‌లో సైన్ ఇన్ చేయండి",
+    title: "ఆస్క్ మిత్ర‌లో సైన్ ఇన్ చేయండి",
     subtitle: "మేము మీకు సురక్షితమైన సైన్-ఇన్ లింక్‌ను ఇమెయిల్ చేస్తాము. పాస్‌వర్డ్ అవసరం లేదు.",
     email: "ఇమెయిల్ చిరునామా",
     sendLink: "సైన్-ఇన్ లింక్ పంపండి",
@@ -443,7 +443,7 @@ const te: Dictionary = {
     tooMany: "గరిష్టంగా 5 ఫోటోలు జోడించవచ్చు.",
     errors: {
       no_item: "ఈ ఫోటోలలో అమ్మదగిన వస్తువు కనబడలేదు. వస్తువు మాత్రమే ఉన్న ఫోటో ప్రయత్నించండి.",
-      prohibited: "ఈ వస్తువును కమ్యూనిటీ కనెక్ట్‌లో పోస్ట్ చేయలేరు.",
+      prohibited: "ఈ వస్తువును ఆస్క్ మిత్ర‌లో పోస్ట్ చేయలేరు.",
       unclear_photo: "ఫోటోలు స్పష్టంగా లేవు. మరింత వెలుతురులో, దగ్గరగా తీసిన ఫోటోలు ప్రయత్నించండి.",
       rate_limited: "ఈ రోజు AI ప్రకటనల పరిమితి పూర్తయింది. తర్వాత మళ్ళీ ప్రయత్నించండి.",
       bad_photo: "ఒక ఫోటోను చదవలేకపోయాము. JPEG, PNG లేదా WebP ఫోటోలు వాడండి.",
@@ -512,7 +512,7 @@ const te: Dictionary = {
   errors: { generic: "ఏదో పొరపాటు జరిగింది.", retry: "మళ్ళీ ప్రయత్నించండి", notFound: "పేజీ కనబడలేదు", home: "హోమ్‌కి వెళ్ళండి" },
   apiOffline: "ప్రకటనలు తాత్కాలికంగా అందుబాటులో లేవు.",
   ask: {
-    title: "కమ్యూనిటీ కనెక్ట్‌ని అడగండి",
+    title: "మిత్రని అడగండి",
     intro: "మామూలు మాటల్లో, తెలుగులో లేదా ఇంగ్లీష్‌లో అడగండి. అసిస్టెంట్ మీ కోసం డైరెక్టరీలో, మార్కెట్‌ప్లేస్‌లో వెతుకుతుంది.",
     greeting: "నమస్తే! మీకు ఏం కావాలి? ఉదాహరణకు ఆల్డీలో డెంటిస్ట్, తెలుగు మాట్లాడే ట్యూటర్, లేదా ఉచిత క్రిబ్.",
     examples: ["ఆల్డీలో డెంటిస్ట్", "యాష్‌బర్న్‌లో తెలుగు ట్యూటర్", "ఎవరైనా ఫర్నిచర్ ఉచితంగా ఇస్తున్నారా?"],
@@ -531,7 +531,7 @@ const te: Dictionary = {
     wanted: "కావాలి",
     verified: "ధృవీకరించబడింది",
     note: "సమాధానాలు ఈ సైట్‌లోని వివరాల నుండే వస్తాయి. వివరాలను ఎప్పుడూ వారితో సరిచూసుకోండి.",
-    launcher: "CCని అడగండి",
+    launcher: "మిత్రని అడగండి",
     close: "మూసివేయండి",
     signInPrompt: "డాక్టర్లు, ట్యూటర్లు, సహాయకులు, రెస్టారెంట్లు, అమ్మకానికి ఉన్న వస్తువుల గురించి అడగడానికి సైన్ ఇన్ చేయండి.",
     signIn: "సైన్ ఇన్",
@@ -588,7 +588,7 @@ const te: Dictionary = {
     publicRecordNote:
       "లైసెన్స్ ఉన్న వైద్య సేవల ప్రదాతల అమెరికా ప్రభుత్వ పబ్లిక్ జాబితా (NPI Registry) నుండి తీసుకున్నది. సమయాలు, భాషలు, ఇతర వివరాలు ధృవీకరించలేదు, కాబట్టి వెళ్ళే ముందు ఫోన్ చేసి కనుక్కోండి.",
     goneTitle: "ఈ ఎంట్రీ ఇప్పుడు లేదు",
-    goneText: "దీన్ని తీసేసి ఉండొచ్చు, లేదా కొత్త లింక్‌తో అప్‌డేట్ చేసి ఉండొచ్చు. మళ్ళీ కనుగొనడానికి డైరెక్టరీలో వెతకండి లేదా Ask CCని అడగండి.",
+    goneText: "దీన్ని తీసేసి ఉండొచ్చు, లేదా కొత్త లింక్‌తో అప్‌డేట్ చేసి ఉండొచ్చు. మళ్ళీ కనుగొనడానికి డైరెక్టరీలో వెతకండి లేదా మిత్రని అడగండి.",
     goneSearch: "డైరెక్టరీలో వెతకండి",
     osmRecord: "ఓపెన్‌స్ట్రీట్‌మ్యాప్ నుండి",
     osmRecordNote:

@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     environment: str = "development"
     database_url: str = "postgresql+psycopg://cc:cc_dev_password@localhost:5432/community_connect"
 
-    # Comma-separated list, e.g. "http://localhost:3000,https://communityconnect.app"
+    # Comma-separated list, e.g. "http://localhost:3000,https://askmitra.ai"
     cors_origins: str = "http://localhost:3000"
 
     # Supabase Auth. Tokens signed with asymmetric keys are verified via JWKS

@@ -10,7 +10,7 @@ import type { Language } from "@/lib/types";
 // Pages that already are a chat, or where a floating chat would get in the way.
 const HIDDEN_ON = ["/ask", "/directory/assistant", "/login", "/auth"];
 
-/** "Ask CC": the search assistant as a floating button and panel on every page. */
+/** "Ask Mitra": the search assistant as a floating button and panel on every page. */
 export function AskWidget({ lang, t, signedIn }: { lang: Language; t: Dictionary["ask"]; signedIn: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);

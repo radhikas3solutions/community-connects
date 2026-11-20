@@ -1,7 +1,7 @@
 """Verification of Supabase Auth access tokens (JWTs).
 
 Supabase issues the token in the browser; the API only verifies it. The user's
-role inside Community Connect lives in our own `profiles` table, never in the token,
+role inside AskMitra lives in our own `profiles` table, never in the token,
 so an admin can be promoted or demoted without re-issuing tokens.
 """
 

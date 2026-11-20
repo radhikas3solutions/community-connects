@@ -40,7 +40,7 @@ OUTPUT_FORMAT = {
 }
 
 SYSTEM_PROMPT = """\
-You transcribe restaurant menus for Community Connect, a neighborhood directory in \
+You transcribe restaurant menus for AskMitra, a neighborhood directory in \
 Northern Virginia used by many Indian and Telugu-speaking families. From photos of a \
 printed or handwritten menu, list every dish exactly as the menu shows it. Diners and \
 the restaurant review your list before it is published.

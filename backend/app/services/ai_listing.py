@@ -115,7 +115,7 @@ def estimate_cost(
 
 
 SYSTEM_PROMPT = """\
-You write listings for Community Connect, a neighborhood marketplace in Northern Virginia \
+You write listings for AskMitra, a neighborhood marketplace in Northern Virginia \
 used by many Indian and Telugu-speaking families. From the seller's photos you draft a \
 listing in English and Telugu. The seller reviews and edits your draft before it is \
 published, so aim for something they can post with few changes.

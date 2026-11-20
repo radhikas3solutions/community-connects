@@ -6,7 +6,7 @@ import { getSession } from "@/lib/supabase/server";
 import { AskChat } from "./AskChat";
 
 export const metadata: Metadata = {
-  title: "Ask Community Connect",
+  title: "Ask Mitra",
   description: "Find doctors, dentists, tutors, helpers, restaurants and used items in Northern Virginia.",
 };
 

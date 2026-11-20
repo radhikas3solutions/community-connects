@@ -1,4 +1,4 @@
-# Community Connect
+# AskMitra
 
 An AI-powered community marketplace for Northern Virginia: buy, sell and give away items,
 find local Indian & Telugu businesses and professionals, and keep up with deals, jobs,

@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(
-        title="Community Connect API",
+        title="AskMitra API",
         version="0.1.0",
         description="Northern Virginia community marketplace, directory and events.",
         docs_url=None if settings.is_production else "/docs",
