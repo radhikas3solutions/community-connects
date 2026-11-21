@@ -1,7 +1,7 @@
 import "server-only";
 
 import { SERVER_API_URL } from "@/lib/env";
-import type { Business, Category, CategoryKind, Listing, Page, Profile } from "@/lib/types";
+import type { AdminProfile, Business, Category, CategoryKind, Listing, Page, Profile } from "@/lib/types";
 
 export class ApiError extends Error {
   constructor(
@@ -103,4 +103,9 @@ export async function getBusiness(id: string, token?: string): Promise<Business 
 }
 
 export const getMyEntries = (token: string) => apiFetch<Business[]>("/api/v1/businesses/mine", { token });
+export const getAdminUsers = (token: string, q?: string) =>
+  apiFetch<AdminProfile[]>(`/api/v1/admin/users?limit=200${q ? `&q=${encodeURIComponent(q)}` : ""}`, {
+    token,
+    cache: "no-store",
+  });
 export const getReviewQueue = (token: string) => apiFetch<Business[]>("/api/v1/businesses/review-queue", { token });

@@ -29,7 +29,11 @@ export interface Category {
 export interface Profile {
   id: string;
   email: string | null;
+  first_name: string | null;
+  last_name: string | null;
   display_name: string | null;
+  phone: string | null;
+  whatsapp: string | null;
   avatar_url: string | null;
   preferred_language: Language;
   role: UserRole;
@@ -37,6 +41,10 @@ export interface Profile {
   zip_code: string | null;
   whatsapp_opt_in: boolean;
   created_at: string;
+}
+
+export interface AdminProfile extends Profile {
+  is_banned: boolean;
 }
 
 export interface Listing {

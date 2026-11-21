@@ -16,9 +16,12 @@ class Profile(TimestampMixin, Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
     email: Mapped[str | None] = mapped_column(String(320), index=True)
+    first_name: Mapped[str | None] = mapped_column(String(60))
+    last_name: Mapped[str | None] = mapped_column(String(60))
     display_name: Mapped[str | None] = mapped_column(String(80))
     avatar_url: Mapped[str | None] = mapped_column(String(1024))
-    phone: Mapped[str | None] = mapped_column(String(32))
+    phone: Mapped[str | None] = mapped_column(String(32))  # international format, "+17035550123"
+    whatsapp: Mapped[str | None] = mapped_column(String(32))
     whatsapp_opt_in: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     preferred_language: Mapped[Language] = mapped_column(
         str_enum(Language, "language"), default=Language.EN, server_default=Language.EN.value

@@ -9,6 +9,7 @@ import { businessName } from "@/lib/directory";
 import { formatPrice, localized } from "@/lib/format";
 import { getSession } from "@/lib/supabase/server";
 import type { Business, Listing, Profile } from "@/lib/types";
+import { ContactDetails } from "./ContactDetails";
 
 export const metadata: Metadata = { title: "My account" };
 
@@ -52,6 +53,12 @@ export default async function AccountPage() {
             {t.account.apiDown}
           </p>
         )}
+        {profile && <ContactDetails profile={profile} t={t.account} countryLabel={t.auth.country} />}
+        {profile?.role === "admin" && (
+          <Link href="/admin/users" className="mt-6 inline-block text-sm font-semibold text-accent-600 hover:underline">
+            👥 {t.account.manageUsers}
+          </Link>
+        )}
         <form action="/auth/signout" method="post" className="mt-6">
           <Button type="submit" variant="secondary" size="sm">
             {t.nav.signOut}
@@ -68,7 +75,9 @@ export default async function AccountPage() {
             </Link>
           </div>
           {listings.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-line p-6 text-center text-muted">{t.myListings.empty}</p>
+            <p className="rounded-xl border border-dashed border-line p-6 text-center text-muted">
+              {t.myListings.empty}
+            </p>
           ) : (
             <ul className="divide-y divide-line rounded-[var(--radius-card)] border border-line bg-surface">
               {listings.map((l) => (
@@ -80,11 +89,18 @@ export default async function AccountPage() {
                   >
                     {t.myListings.status[l.status]}
                   </span>
-                  <Link href={`/listings/${l.id}`} className="min-w-0 flex-1 truncate font-medium hover:underline" lang={lang}>
+                  <Link
+                    href={`/listings/${l.id}`}
+                    className="min-w-0 flex-1 truncate font-medium hover:underline"
+                    lang={lang}
+                  >
                     {localized(l.title_en, l.title_te, lang)}
                   </Link>
                   <span className="hidden text-sm text-muted sm:inline">{formatPrice(l, lang)}</span>
-                  <Link href={`/listings/${l.id}/edit`} className="text-sm font-semibold text-brand-700 hover:underline">
+                  <Link
+                    href={`/listings/${l.id}/edit`}
+                    className="text-sm font-semibold text-brand-700 hover:underline"
+                  >
                     {t.myListings.edit}
                   </Link>
                 </li>
@@ -115,7 +131,9 @@ export default async function AccountPage() {
             </div>
           </div>
           {entries.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-line p-6 text-center text-muted">{t.myEntries.empty}</p>
+            <p className="rounded-xl border border-dashed border-line p-6 text-center text-muted">
+              {t.myEntries.empty}
+            </p>
           ) : (
             <ul className="divide-y divide-line rounded-[var(--radius-card)] border border-line bg-surface">
               {entries.map((b) => (
@@ -134,7 +152,10 @@ export default async function AccountPage() {
                   <Link href={`/directory/${b.id}`} className="min-w-0 flex-1 truncate font-medium hover:underline">
                     {b.category?.icon} {businessName(b, lang)}
                   </Link>
-                  <Link href={`/directory/${b.id}/edit`} className="text-sm font-semibold text-brand-700 hover:underline">
+                  <Link
+                    href={`/directory/${b.id}/edit`}
+                    className="text-sm font-semibold text-brand-700 hover:underline"
+                  >
                     {t.myListings.edit}
                   </Link>
                 </li>

@@ -33,13 +33,28 @@ Use a **new** project for production, so test accounts and data stay out of it.
    - Redirect URLs: `https://askmitra.ai/**`, `https://www.askmitra.ai/**`
 6. Authentication -> Providers -> Google: same client ID/secret as development, and in Google Cloud
    Console add `askmitra.ai` to the OAuth consent screen's authorized domains.
-7. Authentication -> Emails -> Templates: in **Magic Link** and **Confirm signup**, change the
-   link to the line below, so sign-in links work in any browser or device (the default link only
-   works in the browser that asked for it, which fails when opened from the Gmail app or a phone):
+7. Members register with name, email, phone and a password. The email is confirmed once, with
+   a code; after that they sign in with email and password and no email is sent.
+   - Authentication -> Providers -> Email: **Confirm email** on, minimum password length 8.
+   - Authentication -> Emails -> Templates: the app asks for a **code**, so the emails must show
+     `{{ .Token }}` (the default templates only have a link).
 
-   ```html
-   <a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email">Sign in to AskMitra</a>
-   ```
+     **Confirm signup** (subject "Your AskMitra code"):
+
+     ```html
+     <h2>Welcome to AskMitra</h2>
+     <p>Your code is <strong style="font-size:24px">{{ .Token }}</strong></p>
+     <p>Enter it on the AskMitra page to finish creating your account. You only do this once.</p>
+     ```
+
+     **Reset password** (subject "Reset your AskMitra password"):
+
+     ```html
+     <h2>Reset your AskMitra password</h2>
+     <p>Your code is <strong style="font-size:24px">{{ .Token }}</strong></p>
+     <p>Enter it on the AskMitra page with your new password. If you didn't ask, ignore this email.</p>
+     ```
+   - Members who used email links before: they tap "Forgot password?" once to set a password.
 8. Authentication -> Emails: set up custom SMTP (e.g. Resend or Postmark) before launch. Supabase's
    built-in email is limited to a few messages an hour.
 
@@ -100,7 +115,9 @@ records to **DNS only** (grey cloud) so Vercel and Fly can issue certificates.
 1. Sign in on `https://askmitra.ai` once.
 2. Supabase -> SQL editor:
    `update profiles set role = 'admin' where email = '<your sign-in email>';`
-   (or match on `id`, from Authentication -> Users).
+   (or match on `id`, from Authentication -> Users). This is needed only for the first admin:
+   after that, admins give or remove access on `https://askmitra.ai/admin/users`
+   (My account -> Manage members).
 3. **Doctors and dentists** run on the API server, so the database password never leaves Fly.
    Download the monthly file from https://download.cms.gov/nppes/NPI_Files.html into
    `backend/data_imports/nppes.zip`, then cut it down to Northern Virginia (about 7 MB) and run it:

@@ -7,6 +7,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings, get_settings
+from app.core.phone import normalize_phone
 from app.core.security import AuthError, AuthUser, decode_supabase_token
 from app.db.session import get_db
 from app.models import Profile
@@ -54,21 +55,39 @@ def get_optional_user(
         return None
 
 
+def _clean(value: object, limit: int) -> str | None:
+    return str(value).strip()[:limit] or None if value else None
+
+
+def _registration(meta: dict) -> dict[str, str | bool | None]:
+    """Profile fields from the sign-up form (Supabase `user_metadata`) or Google."""
+    first, last = _clean(meta.get("first_name"), 60), _clean(meta.get("last_name"), 60)
+    full = " ".join(x for x in (first, last) if x) or meta.get("full_name") or meta.get("name")
+    return {
+        "first_name": first,
+        "last_name": last,
+        "display_name": _clean(full, 80),
+        "phone": normalize_phone(meta.get("phone")),
+        "whatsapp": (whatsapp := normalize_phone(meta.get("whatsapp"))),
+        "whatsapp_opt_in": whatsapp is not None,
+    }
+
+
 def get_current_profile(
     user: AuthUser = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> Profile:
     """Return the caller's profile, creating it on first sight (just-in-time provisioning)."""
+    meta = user.claims.get("user_metadata") or {}
     profile = db.get(Profile, user.id)
     if profile is None:
-        meta = user.claims.get("user_metadata") or {}
         stmt = (
             insert(Profile)
             .values(
                 id=user.id,
                 email=user.email,
-                display_name=(meta.get("full_name") or meta.get("name") or None),
                 avatar_url=meta.get("avatar_url"),
+                **_registration(meta),
             )
             .on_conflict_do_nothing(index_elements=[Profile.id])
         )
@@ -76,6 +95,12 @@ def get_current_profile(
         db.commit()
         profile = db.get(Profile, user.id)
         assert profile is not None
+    elif profile.first_name is None and meta.get("first_name"):
+        # Signed in before registering with a name (e.g. an older email-link account).
+        for key, value in _registration(meta).items():
+            if value and not getattr(profile, key):
+                setattr(profile, key, value)
+        db.commit()
     if profile.is_banned:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account suspended")
     return profile

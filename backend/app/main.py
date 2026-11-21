@@ -4,6 +4,7 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import (
+    admin_users,
     ai,
     ask,
     assistant,
@@ -38,7 +39,7 @@ def create_app() -> FastAPI:
 
     app.include_router(health.router)
     v1 = APIRouter(prefix="/api/v1")
-    for module in (me, categories, listings, ai, businesses, assistant, ask, imports):
+    for module in (me, categories, listings, ai, businesses, assistant, ask, imports, admin_users):
         v1.include_router(module.router)
     app.include_router(v1)
     return app
